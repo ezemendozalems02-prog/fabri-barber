@@ -13,11 +13,11 @@ export function Faq() {
       <div className="mb-8 text-center sm:mb-12">
         <Reveal>
           <p className="mb-4 flex items-center justify-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground sm:mb-6 sm:text-xs sm:tracking-[0.25em]">
-            <span className="h-px w-6 bg-electric sm:w-8" />
+            <span className="h-px w-6 bg-gold sm:w-8" />
             Preguntas frecuentes
           </p>
         </Reveal>
-        <h2 className="font-display text-3xl font-800 uppercase leading-[0.95] tracking-tight sm:text-6xl">
+        <h2 className="font-display text-3xl font-700 uppercase leading-[0.95] tracking-tight sm:text-6xl">
           <WordReveal text="Todo lo que necesitás saber" />
         </h2>
       </div>

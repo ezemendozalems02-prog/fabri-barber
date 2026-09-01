@@ -5,7 +5,7 @@
 
 @theme inline {
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-archivo), var(--font-geist), sans-serif;
+  --font-display: var(--font-oswald), var(--font-geist), sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   --color-background: var(--background);
@@ -22,7 +22,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-electric: var(--electric);
+  --color-gold: var(--gold);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
@@ -36,26 +36,26 @@
 
 :root {
   color-scheme: dark;
-  /* Sports Recovery — Black / White / Grays / Electric accent */
-  --background: #050505;
-  --foreground: #ffffff;
-  --card: #0b0b0b;
-  --card-foreground: #ffffff;
-  --popover: #0b0b0b;
-  --popover-foreground: #ffffff;
-  --primary: #ffffff;
-  --primary-foreground: #050505;
-  --secondary: #1a1a1a;
-  --secondary-foreground: #ffffff;
-  --muted: #141414;
-  --muted-foreground: #777777;
-  --accent: #1a1a1a;
-  --accent-foreground: #ffffff;
-  --electric: #4d8dff;
+  /* FABRI BARBER — Negro / Gris carbón / Blanco cálido / Metálico dorado */
+  --background: #0a0a0a;
+  --foreground: #f5f3ef;
+  --card: #111110;
+  --card-foreground: #f5f3ef;
+  --popover: #111110;
+  --popover-foreground: #f5f3ef;
+  --primary: #f5f3ef;
+  --primary-foreground: #0a0a0a;
+  --secondary: #1c1b19;
+  --secondary-foreground: #f5f3ef;
+  --muted: #161513;
+  --muted-foreground: #8c887f;
+  --accent: #1c1b19;
+  --accent-foreground: #f5f3ef;
+  --gold: #c8a15c;
   --destructive: #ff4d4d;
-  --border: #1e1e1e;
-  --input: #1a1a1a;
-  --ring: #4d8dff;
+  --border: #242320;
+  --input: #1c1b19;
+  --ring: #c8a15c;
   --radius: 0.5rem;
 }
 
@@ -71,8 +71,8 @@
     -webkit-font-smoothing: antialiased;
   }
   ::selection {
-    background: var(--electric);
-    color: #ffffff;
+    background: var(--gold);
+    color: #0a0a0a;
   }
 }
 
@@ -105,8 +105,8 @@
     text-wrap: balance;
   }
 
-  .glow-electric {
-    box-shadow: 0 0 40px -8px var(--electric);
+  .glow-gold {
+    box-shadow: 0 0 40px -8px var(--gold);
   }
 
   /* hide scrollbar for horizontal scrollers */
@@ -116,6 +116,18 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* subtle diagonal accent — barber-inspired, used sparingly as a decorative divider */
+  .stripes-accent {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      var(--gold) 0px,
+      var(--gold) 2px,
+      transparent 2px,
+      transparent 10px
+    );
+    opacity: 0.5;
   }
 }
 

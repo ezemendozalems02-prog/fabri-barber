@@ -1,27 +1,33 @@
 // ------------------------------------------------------------------
-// CONTENIDO EDITABLE — Sports Recovery
-// Todo el contenido de ejemplo vive acá para que sea fácil de cambiar.
-// No hay backend: los precios / datos son placeholders editables.
+// CONTENIDO EDITABLE — FABRI BARBER
+// Todo el contenido de la marca vive acá para que sea fácil de cambiar.
+// Los precios de SERVICES son los reales provistos por el cliente.
+// Los precios de PRODUCTS son de EJEMPLO y deben reemplazarse.
+// WhatsApp, Instagram y dirección son PLACEHOLDERS hasta tener los datos reales.
 // ------------------------------------------------------------------
 
 export const SITE = {
-  name: 'Sports Recovery',
-  tagline: 'Recuperación deportiva. Movimiento. Rendimiento.',
+  name: 'FABRI BARBER',
+  tagline: 'Cortes, estilo y actitud.',
   // TODO: reemplazar por datos reales
-  whatsapp: '5490000000000', // número en formato internacional sin +
-  instagram: 'https://instagram.com/sportsrecovery',
-  instagramHandle: '@sportsrecovery',
-  address: 'Dirección a confirmar', // editable
-  hours: 'Lun a Vie · 09:00–13:00 / 15:00–20:00', // editable
-  email: 'hola@sportsrecovery.com', // editable
+  whatsapp: '5491100000000', // placeholder — número en formato internacional sin +
+  whatsappDisplay: '+54 9 11 XXXX-XXXX',
+  instagram: 'https://instagram.com/fabribarber',
+  instagramHandle: '@fabribarber',
+  address: 'Dirección a definir', // placeholder
+  email: 'hola@fabribarber.com',
+  hoursGeneral: 'Martes a Sábados · 10:00 a 19:00 hs',
+  hoursBreak: '13:00 a 14:00 hs sin atención',
+  hoursRadiofrecuencia: 'Martes a Viernes · 10:00 a 19:00 hs',
 }
 
 export const NAV_LINKS = [
   { label: 'Inicio', href: '#inicio' },
-  { label: 'Nosotros', href: '#nosotros' },
   { label: 'Servicios', href: '#servicios' },
-  { label: 'Recovery', href: '#recovery' },
-  { label: 'FAQ', href: '#faq' },
+  { label: 'Cortes', href: '#cortes' },
+  { label: 'Productos', href: '#productos' },
+  { label: 'Reservar turno', href: '#reservar' },
+  { label: 'Preguntas frecuentes', href: '#faq' },
   { label: 'Contacto', href: '#contacto' },
 ]
 
@@ -30,251 +36,189 @@ export type Service = {
   index: string
   title: string
   description: string
-  bullets: string[]
-  image: string
-  duration: string
-  price: string // placeholder editable
+  price: number
+  duration: number // minutos
+  note?: string
 }
 
+// Precios reales provistos por el cliente.
 export const SERVICES: Service[] = [
   {
-    id: 'kinesiologia',
+    id: 'corte',
     index: '01',
-    title: 'Kinesiología',
+    title: 'Corte',
     description:
-      'Evaluación y tratamiento orientado a recuperar el movimiento, reducir limitaciones y acompañar procesos de recuperación física.',
-    bullets: [
-      'Evaluación funcional',
-      'Tratamiento personalizado',
-      'Terapia manual',
-      'Recuperación de lesiones',
-      'Reeducación del movimiento',
-      'Seguimiento',
-    ],
-    image: '/images/service-kinesiologia.png',
-    duration: '50 min',
-    price: 'Precio a confirmar',
+      'Corte personalizado según tu estilo, tipo de cabello y forma del rostro. Incluye perfilado de cejas.',
+    price: 14000,
+    duration: 60,
+    note: 'Incluye cejas',
   },
   {
-    id: 'recovery',
+    id: 'barba',
     index: '02',
-    title: 'Recovery Deportivo',
-    description:
-      'Sesiones orientadas a acelerar la recuperación después del entrenamiento, competencia o esfuerzo físico.',
-    bullets: [
-      'Recuperación post-entrenamiento',
-      'Recuperación post-partido',
-      'Descarga muscular',
-      'Movilidad',
-      'Preparación para volver a entrenar',
-    ],
-    image: '/images/service-recovery.png',
-    duration: '45 min',
-    price: 'Precio a confirmar',
+    title: 'Barba',
+    description: 'Perfilado y definición de barba para mantener un look prolijo y cuidado.',
+    price: 4000,
+    duration: 30,
   },
   {
-    id: 'descarga',
+    id: 'cejas',
     index: '03',
-    title: 'Descarga Muscular',
-    description:
-      'Trabajo específico sobre la musculatura para disminuir tensión, mejorar movilidad y favorecer la recuperación.',
-    bullets: ['Liberación muscular', 'Reducción de tensión', 'Mejora de movilidad'],
-    image: '/images/service-recovery.png',
-    duration: '40 min',
-    price: 'Precio a confirmar',
+    title: 'Cejas',
+    description: 'Perfilado de cejas para complementar tu corte y definir tu mirada.',
+    price: 4000,
+    duration: 30,
   },
   {
-    id: 'movilidad',
+    id: 'claritos',
     index: '04',
-    title: 'Movilidad',
-    description:
-      'Trabajo específico para mejorar rangos de movimiento, movilidad articular y calidad del movimiento.',
-    bullets: ['Movilidad articular', 'Amplitud de movimiento', 'Calidad del movimiento'],
-    image: '/images/service-movilidad.png',
-    duration: '40 min',
-    price: 'Precio a confirmar',
+    title: 'Claritos',
+    description: 'Iluminación y coloración personalizada para darle dimensión y estilo a tu cabello.',
+    price: 45000,
+    duration: 120,
   },
   {
-    id: 'prevencion',
+    id: 'global',
     index: '05',
-    title: 'Prevención',
-    description:
-      'Identificación de limitaciones y factores que pueden afectar el rendimiento o aumentar el riesgo de lesión.',
-    bullets: ['Detección de limitaciones', 'Análisis de movimiento', 'Plan preventivo'],
-    image: '/images/service-kinesiologia.png',
-    duration: '50 min',
-    price: 'Precio a confirmar',
+    title: 'Global',
+    description: 'Coloración global para un cambio de look completo y personalizado.',
+    price: 55000,
+    duration: 120,
   },
   {
-    id: 'post-partido',
+    id: 'radiofrecuencia',
     index: '06',
-    title: 'Post-Partido',
-    description:
-      'El partido termina. La recuperación recién empieza. Trabajo posterior al esfuerzo para volver mejor.',
-    bullets: [
-      'Movilidad',
-      'Descarga',
-      'Recuperación',
-      'Revisión del estado muscular',
-      'Preparación para el próximo entrenamiento',
-    ],
-    image: '/images/service-postpartido.png',
-    duration: '45 min',
-    price: 'Precio a confirmar',
+    title: 'Radiofrecuencia',
+    description: 'Tratamiento de radiofrecuencia orientado al cuidado facial masculino.',
+    price: 15000,
+    duration: 60,
+    note: 'Martes a viernes',
   },
 ]
 
-export type RecoveryOption = {
+export type Haircut = {
   id: string
   title: string
-  duration: string
   description: string
-  forWho: string
 }
 
-export const RECOVERY_MENU: RecoveryOption[] = [
-  {
-    id: 'post-partido',
-    title: 'Post-Partido',
-    duration: '45 min',
-    description: 'Para después de competir.',
-    forWho: 'Deportistas que acaban de jugar o competir.',
-  },
-  {
-    id: 'post-entreno',
-    title: 'Post-Entreno',
-    duration: '40 min',
-    description: 'Para recuperar después de una sesión intensa.',
-    forWho: 'Personas que entrenan fuerte y buscan recuperar mejor.',
-  },
-  {
-    id: 'descarga',
-    title: 'Descarga',
-    duration: '40 min',
-    description: 'Para músculos cargados y tensión acumulada.',
-    forWho: 'Cuerpos con tensión y sobrecarga muscular.',
-  },
-  {
-    id: 'movilidad',
-    title: 'Movilidad',
-    duration: '40 min',
-    description: 'Para mejorar movimiento y amplitud.',
-    forWho: 'Quien busca moverse con más libertad y rango.',
-  },
-  {
-    id: 'personalizada',
-    title: 'Recuperación Personalizada',
-    duration: 'A definir',
-    description: 'Sesión adaptada al estado y objetivo de cada persona.',
-    forWho: 'Adaptada a tu estado y objetivo específico.',
-  },
+// Estilos de ejemplo dentro del servicio "Corte" — el cliente puede
+// indicar cuál prefiere de forma opcional al reservar.
+export const HAIRCUTS: Haircut[] = [
+  { id: 'degrade', title: 'Degradé', description: 'Fade clásico y moderno adaptado a la forma de la cabeza.' },
+  { id: 'low-fade', title: 'Low Fade', description: 'Degradé bajo para un estilo limpio y elegante.' },
+  { id: 'mid-fade', title: 'Mid Fade', description: 'Un equilibrio entre clásico y moderno.' },
+  { id: 'high-fade', title: 'High Fade', description: 'Degradé alto para un look más marcado.' },
+  { id: 'taper', title: 'Taper', description: 'Transición sutil y prolija en laterales y nuca.' },
+  { id: 'buzz-cut', title: 'Buzz Cut', description: 'Corte corto, práctico y definido.' },
+  { id: 'textured-crop', title: 'Textured Crop', description: 'Corte moderno con textura y movimiento.' },
+  { id: 'clasico', title: 'Corte Clásico', description: 'Una opción atemporal, prolija y adaptable.' },
 ]
 
-export const FOR_WHO = [
-  { label: 'Futbolistas', index: '01' },
-  { label: 'Personas que entrenan', index: '02' },
-  { label: 'Runners', index: '03' },
-  { label: 'Deportistas', index: '04' },
-  { label: 'Personas activas', index: '05' },
-  { label: 'Buscan recuperar mejor', index: '06' },
-]
+export type Product = {
+  id: string
+  title: string
+  description: string
+  price: number // EJEMPLO — reemplazar por precio real
+  icon: 'wax' | 'comb' | 'pomade' | 'oil' | 'shampoo' | 'brush'
+}
 
-export const METHOD = [
+// Productos y precios de EJEMPLO — reemplazar por el catálogo real.
+export const PRODUCTS: Product[] = [
   {
-    step: '01',
-    title: 'Evaluamos',
-    text: 'Entendemos tu estado actual, tus necesidades y tu objetivo.',
+    id: 'cera-matte',
+    title: 'Cera Matte',
+    description: 'Fijación media/alta con acabado mate.',
+    price: 12000,
+    icon: 'wax',
   },
   {
-    step: '02',
-    title: 'Identificamos',
-    text: 'Detectamos las principales limitaciones o zonas que necesitan atención.',
+    id: 'peine-profesional',
+    title: 'Peine Profesional',
+    description: 'Peine profesional para peinar y definir tu estilo.',
+    price: 8000,
+    icon: 'comb',
   },
   {
-    step: '03',
-    title: 'Trabajamos',
-    text: 'Aplicamos el abordaje adecuado para cada caso.',
+    id: 'pomada-cabello',
+    title: 'Pomada para Cabello',
+    description: 'Fijación y brillo controlado para estilos clásicos y modernos.',
+    price: 15000,
+    icon: 'pomade',
   },
   {
-    step: '04',
-    title: 'Acompañamos',
-    text: 'Seguimos tu evolución y adaptamos el trabajo según tus necesidades.',
-  },
-]
-
-export const EXPERIENCE_STEPS = [
-  'Llegás',
-  'Evaluamos',
-  'Trabajamos',
-  'Recuperás',
-  'Volvés a moverte',
-]
-
-export const INSTAGRAM_IMAGES = [
-  '/images/ig-1.png',
-  '/images/ig-2.png',
-  '/images/ig-3.png',
-  '/images/ig-4.png',
-  '/images/service-movilidad.png',
-  '/images/service-recovery.png',
-]
-
-// Testimonios de EJEMPLO — reemplazar por reales cuando el cliente los provea.
-export const TESTIMONIALS = [
-  {
-    quote:
-      'Volví a entrenar sin molestias y con la cabeza más tranquila. El seguimiento hace toda la diferencia.',
-    name: 'Nombre de ejemplo',
-    activity: 'Fútbol amateur',
+    id: 'aceite-barba',
+    title: 'Aceite para Barba',
+    description: 'Aceite para hidratar y mantener la barba suave y prolija.',
+    price: 13000,
+    icon: 'oil',
   },
   {
-    quote:
-      'Después de cada partido paso por acá. Recupero mucho mejor y llego entero a la semana.',
-    name: 'Nombre de ejemplo',
-    activity: 'Running',
+    id: 'shampoo-masculino',
+    title: 'Shampoo Masculino',
+    description: 'Shampoo de uso diario para mantener el cabello limpio y saludable.',
+    price: 11000,
+    icon: 'shampoo',
   },
   {
-    quote:
-      'Me ayudaron a entender mi cuerpo y a moverme mejor. Profesionalismo de principio a fin.',
-    name: 'Nombre de ejemplo',
-    activity: 'Crossfit',
+    id: 'cepillo-barba',
+    title: 'Cepillo para Barba',
+    description: 'Para ordenar, peinar y mantener la barba en forma.',
+    price: 9000,
+    icon: 'brush',
   },
 ]
 
 export const FAQS = [
   {
-    q: '¿Necesito estar lesionado para hacer una sesión?',
-    a: 'No necesariamente. Las sesiones también pueden estar orientadas a recuperación, movilidad, descarga y preparación.',
+    q: '¿Cómo puedo reservar un turno?',
+    a: 'Elegí el servicio, seleccioná una fecha y horario disponible y completá tus datos. Para confirmar el turno se solicita una seña del 30%.',
   },
   {
-    q: '¿Cuánto dura una sesión?',
-    a: 'La duración depende del servicio seleccionado.',
-  },
-  {
-    q: '¿Tengo que reservar previamente?',
-    a: 'Sí, recomendamos reservar previamente para asegurar disponibilidad.',
-  },
-  {
-    q: '¿Qué tengo que llevar?',
-    a: 'Ropa cómoda que permita trabajar correctamente sobre la zona a tratar.',
+    q: '¿La seña es obligatoria?',
+    a: 'Sí. El turno queda confirmado una vez acreditada la seña.',
   },
   {
     q: '¿Puedo cancelar mi turno?',
-    a: 'Sí, según la política de cancelación definida por Sports Recovery.',
+    a: 'Las condiciones de cancelación y devolución de la seña serán informadas al momento de reservar.',
   },
   {
-    q: '¿Puedo reservar después de un partido?',
-    a: 'Sí. El servicio Post-Partido está pensado específicamente para acompañar la recuperación después de competir.',
+    q: '¿Qué días atiende FABRI BARBER?',
+    a: 'La barbería atiende de martes a sábados de 10:00 a 19:00 hs.',
   },
   {
-    q: '¿Trabajan con deportistas de cualquier nivel?',
-    a: 'Sí. Adaptamos el trabajo a cada persona y su nivel.',
+    q: '¿Hay horarios en los que no se atiende?',
+    a: 'Sí. De 13:00 a 14:00 hs no hay atención.',
   },
   {
-    q: '¿Dónde están ubicados?',
-    a: 'Dirección a confirmar. Escribinos por WhatsApp para coordinar.',
+    q: '¿Qué días se realiza radiofrecuencia?',
+    a: 'Radiofrecuencia está disponible de martes a viernes de 10:00 a 19:00 hs, excepto de 13:00 a 14:00 hs.',
+  },
+  {
+    q: '¿Qué medios de pago aceptan?',
+    a: 'La seña se realiza online mediante Mercado Pago. El saldo restante se abona en el local.',
+  },
+  {
+    q: '¿Puedo elegir qué corte quiero?',
+    a: 'Sí. Al reservar un corte podés indicar el estilo que querés, por ejemplo degradé, taper, crop, buzz cut o corte clásico.',
   },
 ]
 
-// Horarios de ejemplo para el flujo visual de reserva (sin backend)
-export const SAMPLE_TIMES = ['09:00', '10:00', '11:30', '14:00', '15:30', '17:00', '18:30']
+// Testimonios de EJEMPLO — reemplazar por reales cuando el cliente los provea.
+export const TESTIMONIALS = [
+  {
+    quote: 'Cada vez que voy salgo con el corte que tenía en mente. Atención de primera y muy prolijos con los detalles.',
+    name: 'Nombre de ejemplo',
+    activity: 'Cliente habitual',
+  },
+  {
+    quote: 'Reservé el turno desde el celular en dos minutos y me esperaban a horario. Se nota la organización.',
+    name: 'Nombre de ejemplo',
+    activity: 'Cliente habitual',
+  },
+  {
+    quote: 'El perfilado de barba quedó impecable. Ahora es mi barbería de referencia.',
+    name: 'Nombre de ejemplo',
+    activity: 'Cliente habitual',
+  },
+]

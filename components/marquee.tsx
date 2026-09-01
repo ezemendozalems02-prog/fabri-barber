@@ -1,12 +1,4 @@
-const ITEMS = [
-  'Recuperación',
-  'Movilidad',
-  'Kinesiología',
-  'Recovery',
-  'Rendimiento',
-  'Descarga',
-  'Prevención',
-]
+const ITEMS = ['Cortes', 'Barba', 'Cejas', 'Color', 'Estilo', 'Actitud', 'Precisión']
 
 export function Marquee() {
   const row = [...ITEMS, ...ITEMS]
@@ -15,10 +7,10 @@ export function Marquee() {
       <div className="flex w-max animate-marquee">
         {row.map((item, i) => (
           <div key={i} className="flex items-center">
-            <span className="px-5 font-display text-lg font-800 uppercase tracking-tight sm:px-8 sm:text-3xl">
+            <span className="px-5 font-display text-lg font-700 uppercase tracking-tight sm:px-8 sm:text-3xl">
               {item}
             </span>
-            <span className="text-electric">✕</span>
+            <span className="text-gold">✕</span>
           </div>
         ))}
       </div>

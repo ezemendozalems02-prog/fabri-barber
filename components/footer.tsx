@@ -1,7 +1,8 @@
 'use client'
 
 import { NAV_LINKS, SITE } from '@/lib/site-data'
-import { SRLogo } from './sr-logo'
+import { InstagramIcon, WhatsappIcon } from './icons'
+import { LogoMark, Wordmark } from './logo'
 
 export function Footer() {
   const year = new Date().getFullYear()
@@ -10,26 +11,44 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-card">
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-8 sm:py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-12">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
           <div className="col-span-full sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2">
-              <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                <SRLogo className="text-base" />
+              <span className="flex h-9 w-9 items-center justify-center rounded-full border border-gold text-gold">
+                <LogoMark className="h-4 w-4" />
               </span>
-              <span className="font-display text-sm font-800 uppercase tracking-widest">
-                Sports Recovery
-              </span>
+              <Wordmark className="text-sm" />
             </div>
             <p className="mt-5 max-w-xs text-pretty text-sm leading-relaxed text-muted-foreground">
-              {SITE.tagline} Recuperá mejor, movete mejor, rendí mejor.
+              {SITE.tagline}
             </p>
+            <div className="mt-5 flex items-center gap-3">
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-gold hover:text-gold"
+              >
+                <WhatsappIcon className="h-4 w-4" />
+              </a>
+              <a
+                href={SITE.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-gold hover:text-gold"
+              >
+                <InstagramIcon className="h-4 w-4" />
+              </a>
+            </div>
           </div>
 
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
               Navegación
             </p>
-            <ul className="mt-5 grid grid-cols-2 gap-2">
+            <ul className="mt-5 flex flex-col gap-2.5">
               {NAV_LINKS.map((link) => (
                 <li key={link.href}>
                   <a
@@ -45,32 +64,32 @@ export function Footer() {
 
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-              Contacto
+              Horarios
             </p>
-            <ul className="mt-5 flex flex-col gap-3 text-sm">
-              <li>
-                <a href={waHref} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-electric">
-                  WhatsApp
-                </a>
-              </li>
-              <li>
-                <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-electric">
-                  {SITE.instagramHandle}
-                </a>
-              </li>
-              <li className="text-muted-foreground">{SITE.hours}</li>
-              <li className="text-muted-foreground">{SITE.address}</li>
-            </ul>
+            <div className="mt-5 flex flex-col gap-1 text-sm">
+              <p>Martes a Sábados</p>
+              <p>10:00 a 19:00 hs</p>
+              <p className="text-muted-foreground">13:00 a 14:00 hs cerrado</p>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+              Radiofrecuencia
+            </p>
+            <div className="mt-5 flex flex-col gap-1 text-sm">
+              <p>Martes a Viernes</p>
+              <p>10:00 a 19:00 hs</p>
+              <p className="text-muted-foreground">13:00 a 14:00 hs cerrado</p>
+            </div>
           </div>
         </div>
 
         <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 sm:mt-16 sm:flex-row sm:items-center sm:gap-4 sm:pt-8">
           <p className="text-xs text-muted-foreground">
-            © {year} Sports Recovery. Todos los derechos reservados.
+            © {year} FABRI BARBER. Todos los derechos reservados.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Diseño premium · Contenido de ejemplo editable
-          </p>
+          <p className="text-xs text-muted-foreground">{SITE.address}</p>
         </div>
       </div>
     </footer>

@@ -1,40 +1,37 @@
 import { About } from '@/components/about'
-import { BookingProvider } from '@/components/booking-provider'
-import { Experience } from '@/components/experience'
+import { BookingSection } from '@/components/booking-section'
+import { Contact } from '@/components/contact'
+import { Details } from '@/components/details'
 import { Faq } from '@/components/faq'
-import { FinalCta } from '@/components/final-cta'
 import { Footer } from '@/components/footer'
-import { ForWho } from '@/components/for-who'
+import { Haircuts } from '@/components/haircuts'
 import { Hero } from '@/components/hero'
-import { Instagram } from '@/components/instagram'
 import { Marquee } from '@/components/marquee'
-import { Methodology } from '@/components/methodology'
 import { MobileCta } from '@/components/mobile-cta'
 import { Navbar } from '@/components/navbar'
-import { RecoveryMenu } from '@/components/recovery-menu'
+import { Products } from '@/components/products'
 import { Services } from '@/components/services'
 import { Testimonials } from '@/components/testimonials'
 
 export default function Page() {
   return (
-    <BookingProvider>
+    <>
       <Navbar />
       <main>
         <Hero />
         <Marquee />
         <About />
         <Services />
-        <RecoveryMenu />
-        <ForWho />
-        <Methodology />
-        <Experience />
+        <Haircuts />
+        <Details />
+        <Products />
+        <BookingSection />
         <Testimonials />
-        <Instagram />
         <Faq />
-        <FinalCta />
+        <Contact />
       </main>
       <Footer />
       <MobileCta />
-    </BookingProvider>
+    </>
   )
 }

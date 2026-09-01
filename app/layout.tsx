@@ -1,31 +1,32 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono, Archivo } from 'next/font/google'
+import { Geist, Geist_Mono, Oswald } from 'next/font/google'
 import './globals.css'
+import { BookingProvider } from '@/components/booking-provider'
+import { CartProvider } from '@/components/cart-provider'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
 const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
-const archivo = Archivo({
+const oswald = Oswald({
   subsets: ['latin'],
-  weight: ['600', '700', '800', '900'],
-  variable: '--font-archivo',
+  weight: ['500', '600', '700'],
+  variable: '--font-oswald',
 })
 
 export const metadata: Metadata = {
-  title: 'Sports Recovery | Recuperación Deportiva y Kinesiología',
+  title: 'FABRI BARBER | Barbería moderna',
   description:
-    'Sports Recovery — recuperación deportiva, kinesiología, movilidad y bienestar físico para acompañarte antes, durante y después del entrenamiento.',
+    'FABRI BARBER — cortes, barba, cejas, color y cuidado masculino. Reservá tu turno online en minutos.',
   generator: 'v0.app',
   openGraph: {
-    title: 'Sports Recovery | Recuperación Deportiva y Kinesiología',
-    description:
-      'Recuperación deportiva, kinesiología, movilidad y rendimiento. Recuperá mejor. Movete mejor. Rendí mejor.',
+    title: 'FABRI BARBER | Barbería moderna',
+    description: 'Tu estilo. Tu corte. Tu barbería. Reservá tu turno online en minutos.',
     type: 'website',
   },
 }
 
 export const viewport: Viewport = {
-  themeColor: '#050505',
+  themeColor: '#0a0a0a',
   colorScheme: 'dark',
 }
 
@@ -37,10 +38,12 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`dark bg-background ${geist.variable} ${geistMono.variable} ${archivo.variable}`}
+      className={`dark bg-background ${geist.variable} ${geistMono.variable} ${oswald.variable}`}
     >
       <body className="antialiased grain font-sans">
-        {children}
+        <CartProvider>
+          <BookingProvider>{children}</BookingProvider>
+        </CartProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

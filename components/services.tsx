@@ -1,14 +1,22 @@
 'use client'
 
-import { motion } from 'motion/react'
-import { useState } from 'react'
+import { formatPrice } from '@/lib/booking-data'
 import { SERVICES } from '@/lib/site-data'
 import { useBooking } from './booking-provider'
+import { BrowIcon, PaletteIcon, RazorIcon, ScissorsIcon, WaveIcon } from './icons'
 import { Reveal, WordReveal } from './motion-primitives'
 
+const SERVICE_ICONS: Record<string, typeof ScissorsIcon> = {
+  corte: ScissorsIcon,
+  barba: RazorIcon,
+  cejas: BrowIcon,
+  claritos: PaletteIcon,
+  global: PaletteIcon,
+  radiofrecuencia: WaveIcon,
+}
+
 export function Services() {
-  const { open } = useBooking()
-  const [active, setActive] = useState<string | null>(null)
+  const { requestBooking } = useBooking()
 
   return (
     <section id="servicios" className="border-t border-border bg-card">
@@ -17,84 +25,62 @@ export function Services() {
           <div>
             <Reveal>
               <p className="mb-4 flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground sm:mb-6 sm:text-xs sm:tracking-[0.25em]">
-                <span className="h-px w-6 bg-electric sm:w-8" />
+                <span className="h-px w-6 bg-gold sm:w-8" />
                 Servicios
               </p>
             </Reveal>
-            <h2 className="max-w-2xl font-display text-3xl font-800 uppercase leading-[0.95] tracking-tight sm:text-4xl md:text-6xl">
-              <WordReveal text="Lo que hacemos por vos" />
+            <h2 className="max-w-2xl font-display text-3xl font-700 uppercase leading-[0.95] tracking-tight sm:text-4xl md:text-6xl">
+              <WordReveal text="Servicios de barbería" />
             </h2>
           </div>
           <Reveal delay={0.15}>
             <p className="max-w-xs text-pretty text-sm leading-relaxed text-muted-foreground">
-              Cada sesión se adapta a tu estado y objetivo. Elegí lo que necesitás.
+              Precios claros, sin sorpresas. Elegí tu servicio y reservá en minutos.
             </p>
           </Reveal>
         </div>
 
         <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
-          {SERVICES.map((service, i) => (
-            <Reveal key={service.id} delay={(i % 3) * 0.08} className="bg-card">
-              <motion.article
-                onMouseEnter={() => setActive(service.id)}
-                onMouseLeave={() => setActive(null)}
-                className="group relative flex h-full flex-col overflow-hidden"
-              >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <img
-                    src={service.image || '/placeholder.svg'}
-                    alt={service.title}
-                    className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-card via-card/20 to-transparent" />
-                  <span className="absolute left-5 top-5 font-mono text-xs text-muted-foreground">
-                    {service.index}
-                  </span>
-                  <span className="absolute right-5 top-5 rounded-full border border-border bg-background/60 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-                    {service.duration}
-                  </span>
-                </div>
+          {SERVICES.map((service, i) => {
+            const Icon = SERVICE_ICONS[service.id] ?? ScissorsIcon
+            return (
+              <Reveal key={service.id} delay={(i % 3) * 0.08} className="bg-card">
+                <article className="group relative flex h-full flex-col p-6">
+                  <div className="flex items-start justify-between">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full border border-border text-gold transition-colors group-hover:border-gold">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <span className="font-mono text-xs text-muted-foreground">{service.index}</span>
+                  </div>
 
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="font-display text-2xl font-800 uppercase tracking-tight">
+                  <h3 className="mt-5 font-display text-2xl font-700 uppercase tracking-tight">
                     {service.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {service.note && (
+                    <span className="mt-1 inline-block w-fit rounded-full border border-border px-2.5 py-0.5 text-[11px] text-muted-foreground">
+                      {service.note}
+                    </span>
+                  )}
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                     {service.description}
                   </p>
 
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {service.bullets.slice(0, 4).map((b) => (
-                      <span
-                        key={b}
-                        className="rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground"
-                      >
-                        {b}
-                      </span>
-                    ))}
-                  </div>
-
                   <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
-                    <span className="text-xs uppercase tracking-wider text-muted-foreground">
-                      {service.price}
+                    <span className="font-display text-xl font-700 text-gold">
+                      {formatPrice(service.price)}
                     </span>
                     <button
-                      onClick={() => open(service.id)}
-                      className="flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors group-hover:text-electric"
+                      onClick={() => requestBooking(service.id)}
+                      className="flex items-center gap-1.5 text-sm font-semibold text-foreground transition-colors group-hover:text-gold"
                     >
                       Reservar
-                      <motion.span
-                        animate={{ x: active === service.id ? 4 : 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        →
-                      </motion.span>
+                      <span className="transition-transform group-hover:translate-x-1">→</span>
                     </button>
                   </div>
-                </div>
-              </motion.article>
-            </Reveal>
-          ))}
+                </article>
+              </Reveal>
+            )
+          })}
         </div>
       </div>
     </section>
