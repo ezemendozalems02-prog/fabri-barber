@@ -230,7 +230,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Tu nombre (para coordinar la entrega)"
-                      className="mb-3 w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-sm outline-none transition-colors focus:border-gold"
+                      className="mb-3 w-full rounded-lg border border-border bg-secondary px-4 py-2.5 text-base outline-none transition-colors focus:border-gold sm:text-sm"
                     />
                     <button
                       onClick={confirmOrder}

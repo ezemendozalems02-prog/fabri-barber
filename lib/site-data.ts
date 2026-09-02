@@ -9,16 +9,21 @@
 export const SITE = {
   name: 'FABRI BARBER',
   tagline: 'Cortes, estilo y actitud.',
-  // TODO: reemplazar por datos reales
-  whatsapp: '5491100000000', // placeholder — número en formato internacional sin +
-  whatsappDisplay: '+54 9 11 XXXX-XXXX',
-  instagram: 'https://instagram.com/fabribarber',
-  instagramHandle: '@fabribarber',
+  whatsapp: '5491135659873', // formato internacional sin +, usado en los links wa.me
+  whatsappDisplay: '+54 9 11 3565-9873',
+  instagram: 'https://www.instagram.com/fabrilabanca.03',
+  instagramHandle: '@fabrilabanca.03',
   address: 'Dirección a definir', // placeholder
-  email: 'hola@fabribarber.com',
   hoursGeneral: 'Martes a Sábados · 10:00 a 19:00 hs',
   hoursBreak: '13:00 a 14:00 hs sin atención',
   hoursRadiofrecuencia: 'Martes a Viernes · 10:00 a 19:00 hs',
+}
+
+// Datos para la seña por transferencia (Mercado Pago) — el cliente transfiere
+// a este alias y envía la captura por WhatsApp para confirmar el turno.
+export const MERCADOPAGO = {
+  alias: '.fabri',
+  titular: 'Fabrizio Antonio Labanca',
 }
 
 export const NAV_LINKS = [
@@ -123,49 +128,28 @@ export type Product = {
   icon: 'wax' | 'comb' | 'pomade' | 'oil' | 'shampoo' | 'brush'
 }
 
-// Productos y precios de EJEMPLO — reemplazar por el catálogo real.
+// Precio de EJEMPLO — reemplazar por el precio real.
 export const PRODUCTS: Product[] = [
   {
-    id: 'cera-matte',
-    title: 'Cera Matte',
-    description: 'Fijación media/alta con acabado mate.',
+    id: 'cera-brillo-coco',
+    title: 'Cera para Pelo — Brillo Coco',
+    description: 'Fijación con acabado brillante y aroma a coco.',
     price: 12000,
     icon: 'wax',
   },
   {
-    id: 'peine-profesional',
-    title: 'Peine Profesional',
-    description: 'Peine profesional para peinar y definir tu estilo.',
-    price: 8000,
-    icon: 'comb',
+    id: 'cera-brillo-cereza',
+    title: 'Cera para Pelo — Brillo Cereza',
+    description: 'Fijación con acabado brillante y aroma a cereza.',
+    price: 12000,
+    icon: 'wax',
   },
   {
-    id: 'pomada-cabello',
-    title: 'Pomada para Cabello',
-    description: 'Fijación y brillo controlado para estilos clásicos y modernos.',
-    price: 15000,
-    icon: 'pomade',
-  },
-  {
-    id: 'aceite-barba',
-    title: 'Aceite para Barba',
-    description: 'Aceite para hidratar y mantener la barba suave y prolija.',
-    price: 13000,
-    icon: 'oil',
-  },
-  {
-    id: 'shampoo-masculino',
-    title: 'Shampoo Masculino',
-    description: 'Shampoo de uso diario para mantener el cabello limpio y saludable.',
-    price: 11000,
-    icon: 'shampoo',
-  },
-  {
-    id: 'cepillo-barba',
-    title: 'Cepillo para Barba',
-    description: 'Para ordenar, peinar y mantener la barba en forma.',
-    price: 9000,
-    icon: 'brush',
+    id: 'cera-mate-hierba-pura',
+    title: 'Cera para Pelo — Mate Hierba Pura',
+    description: 'Fijación con acabado mate natural, a base de hierba pura.',
+    price: 12000,
+    icon: 'wax',
   },
 ]
 

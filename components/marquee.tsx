@@ -3,7 +3,7 @@ const ITEMS = ['Cortes', 'Barba', 'Cejas', 'Color', 'Estilo', 'Actitud', 'Precis
 export function Marquee() {
   const row = [...ITEMS, ...ITEMS]
   return (
-    <section className="border-y border-border bg-secondary py-3.5 sm:py-5" aria-hidden="true">
+    <section className="overflow-hidden border-y border-border bg-secondary py-3.5 sm:py-5" aria-hidden="true">
       <div className="flex w-max animate-marquee">
         {row.map((item, i) => (
           <div key={i} className="flex items-center">

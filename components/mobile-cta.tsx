@@ -8,14 +8,29 @@ import { WhatsappIcon } from './icons'
 
 export function MobileCta() {
   const { requestBooking } = useBooking()
-  const [show, setShow] = useState(false)
+  const [scrolledPast, setScrolledPast] = useState(false)
+  const [inBookingSection, setInBookingSection] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 400)
+    const onScroll = () => setScrolledPast(window.scrollY > 400)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // Oculta la barra fija mientras el formulario de reserva está en pantalla:
+  // ahí ya hay botones propios y la barra fija los tapa en celulares chicos.
+  useEffect(() => {
+    const el = document.getElementById('reservar')
+    if (!el) return
+    const observer = new IntersectionObserver(([entry]) => setInBookingSection(entry.isIntersecting), {
+      threshold: 0.15,
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const show = scrolledPast && !inBookingSection
 
   return (
     <>

@@ -10,10 +10,9 @@ import {
   isDateAllowed,
   timeToMinutes,
 } from '@/lib/booking-data'
-import { confirmarTurnoPublico, getOccupiedRangesForDate } from '@/lib/actions/turnos'
-import { processMockPayment } from '@/lib/mock-payment'
+import { getOccupiedRangesForDate, reservarTurnoPublico } from '@/lib/actions/turnos'
 import { DEFAULT_BARBERO_ID } from '@/lib/constants'
-import { HAIRCUTS, SERVICES, SITE } from '@/lib/site-data'
+import { HAIRCUTS, MERCADOPAGO, SERVICES, SITE } from '@/lib/site-data'
 import type { Turno } from '@/lib/types'
 import { useBooking } from './booking-provider'
 import { CalendarIcon, CheckIcon, ClockIcon, WhatsappIcon } from './icons'
@@ -93,7 +92,6 @@ export function BookingSection() {
   const [time, setTime] = useState<string | null>(null)
   const [nombre, setNombre] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
-  const [email, setEmail] = useState('')
   const [comentario, setComentario] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [confirmedTurno, setConfirmedTurno] = useState<Turno | null>(null)
@@ -157,7 +155,6 @@ export function BookingSection() {
     setTime(null)
     setNombre('')
     setWhatsapp('')
-    setEmail('')
     setComentario('')
     setErrors({})
     setConfirmedTurno(null)
@@ -167,40 +164,31 @@ export function BookingSection() {
     const next: Record<string, string> = {}
     if (!nombre.trim()) next.nombre = 'Ingresá tu nombre y apellido.'
     if (!whatsapp.trim()) next.whatsapp = 'Ingresá tu WhatsApp.'
-    if (!email.trim() || !/^\S+@\S+\.\S+$/.test(email)) next.email = 'Ingresá un email válido.'
     setErrors(next)
     return Object.keys(next).length === 0
   }
 
-  async function handlePay() {
+  async function handleReservar() {
     if (!service || !date || !time) return
     setPhase('pagando')
-    const { deposit: monto } = calcDeposit(service.price)
-    const result = await processMockPayment(monto)
 
-    if (!result.approved) {
-      setPhase('rechazado')
-      return
-    }
-
-    const result2 = await confirmarTurnoPublico({
-      cliente: { nombre, whatsapp, email },
+    const result = await reservarTurnoPublico({
+      cliente: { nombre, whatsapp },
       servicioId: service.id,
       barberoId: DEFAULT_BARBERO_ID,
       estiloCorte: styleId ?? undefined,
       fecha: toDateKey(date),
       hora: time,
       comentario: comentario || undefined,
-      paymentId: result.paymentId,
     })
 
-    if ('motivo' in result2) {
-      // El horario se ocupó justo antes de confirmar el pago — muy poco probable, pero se cubre.
+    if ('motivo' in result) {
+      // El horario se ocupó justo antes de confirmar — muy poco probable, pero se cubre.
       setPhase('rechazado')
       return
     }
 
-    setConfirmedTurno(result2)
+    setConfirmedTurno(result)
     setPhase('confirmado')
   }
 
@@ -220,7 +208,7 @@ export function BookingSection() {
 
   const whatsappHref = useMemo(() => {
     if (!confirmedTurno || !service) return `https://wa.me/${SITE.whatsapp}`
-    const msg = `Hola! Confirmé un turno de *${service.title}* para el ${confirmedTurno.fecha} a las ${confirmedTurno.hora_inicio}. Mi nombre es ${nombre}.`
+    const msg = `Hola! Reservé un turno de *${service.title}* para el ${confirmedTurno.fecha} a las ${confirmedTurno.hora_inicio}. Mi nombre es ${nombre}. Ya transferí la seña de ${formatPrice(confirmedTurno.monto_seña)} al alias ${MERCADOPAGO.alias} — les adjunto la captura del comprobante.`
     return `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(msg)}`
   }, [confirmedTurno, service, nombre])
 
@@ -445,7 +433,7 @@ export function BookingSection() {
                       value={nombre}
                       onChange={(e) => setNombre(e.target.value)}
                       placeholder="Nombre y apellido"
-                      className="w-full rounded-lg border border-border bg-secondary px-4 py-3 text-sm outline-none transition-colors focus:border-gold"
+                      className="w-full rounded-lg border border-border bg-secondary px-4 py-3 text-base outline-none transition-colors focus:border-gold sm:text-sm"
                     />
                     {errors.nombre && <p className="mt-1 text-xs text-destructive">{errors.nombre}</p>}
                   </div>
@@ -454,26 +442,18 @@ export function BookingSection() {
                       value={whatsapp}
                       onChange={(e) => setWhatsapp(e.target.value)}
                       placeholder="WhatsApp"
-                      className="w-full rounded-lg border border-border bg-secondary px-4 py-3 text-sm outline-none transition-colors focus:border-gold"
+                      type="tel"
+                      inputMode="tel"
+                      className="w-full rounded-lg border border-border bg-secondary px-4 py-3 text-base outline-none transition-colors focus:border-gold sm:text-sm"
                     />
                     {errors.whatsapp && <p className="mt-1 text-xs text-destructive">{errors.whatsapp}</p>}
-                  </div>
-                  <div>
-                    <input
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Email"
-                      type="email"
-                      className="w-full rounded-lg border border-border bg-secondary px-4 py-3 text-sm outline-none transition-colors focus:border-gold"
-                    />
-                    {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
                   </div>
                   <textarea
                     value={comentario}
                     onChange={(e) => setComentario(e.target.value)}
                     placeholder="Comentario (opcional)"
                     rows={2}
-                    className="w-full resize-none rounded-lg border border-border bg-secondary px-4 py-3 text-sm outline-none transition-colors focus:border-gold"
+                    className="w-full resize-none rounded-lg border border-border bg-secondary px-4 py-3 text-base outline-none transition-colors focus:border-gold sm:text-sm"
                   />
                 </div>
                 <div className="mt-6 flex gap-2">
@@ -507,15 +487,26 @@ export function BookingSection() {
                   </div>
                 </div>
 
+                <div className="mt-6 rounded-lg border border-gold/40 bg-gold/[0.06] p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gold">Cómo pagar la seña</p>
+                  <p className="mt-2 text-sm leading-relaxed">
+                    Transferí <span className="font-semibold text-gold">{formatPrice(deposit.deposit)}</span> por Mercado Pago a este alias:
+                  </p>
+                  <div className="mt-3 flex flex-col gap-1 rounded-lg bg-background/60 p-3">
+                    <Row label="Alias" value={MERCADOPAGO.alias} highlight />
+                    <Row label="Titular" value={MERCADOPAGO.titular} />
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Después de transferir, tocá el botón de abajo para reservar tu horario y enviarnos la captura del comprobante por WhatsApp. Tu turno queda confirmado al recibirla.
+                  </p>
+                </div>
+
                 <button
-                  onClick={handlePay}
+                  onClick={handleReservar}
                   className="mt-6 w-full rounded-full bg-gold py-3.5 text-sm font-semibold uppercase tracking-wide text-background transition-transform hover:scale-[1.01]"
                 >
-                  Pagar seña y confirmar turno
+                  Reservar turno y enviar comprobante
                 </button>
-                <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                  Pago simulado — se integrará con Mercado Pago.
-                </p>
                 <button onClick={() => setPhase('datos')} className="mt-3 w-full rounded-lg border border-border px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary">
                   Atrás
                 </button>
@@ -530,7 +521,7 @@ export function BookingSection() {
                   transition={{ repeat: Number.POSITIVE_INFINITY, duration: 1, ease: 'linear' }}
                   className="h-10 w-10 rounded-full border-2 border-border border-t-gold"
                 />
-                <p className="font-display text-lg font-700 uppercase">Procesando pago con Mercado Pago…</p>
+                <p className="font-display text-lg font-700 uppercase">Guardando tu reserva…</p>
                 <p className="text-sm text-muted-foreground">No cierres esta ventana.</p>
               </motion.div>
             )}
@@ -541,7 +532,10 @@ export function BookingSection() {
                 <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-gold text-gold">
                   <CheckIcon className="h-6 w-6" />
                 </span>
-                <h3 className="mt-4 font-display text-2xl font-700 uppercase">¡Turno confirmado!</h3>
+                <h3 className="mt-4 font-display text-2xl font-700 uppercase">¡Turno reservado!</h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Falta un paso: enviá la captura de tu transferencia por WhatsApp para confirmar el turno.
+                </p>
 
                 <div className="mt-6 rounded-lg border border-border bg-secondary/50 p-4 text-left text-sm">
                   <Row label="Servicio" value={service.title} />
@@ -549,8 +543,16 @@ export function BookingSection() {
                   <Row label="Horario" value={confirmedTurno.hora_inicio} />
                   <Row label="Nombre" value={confirmedTurno.cliente.nombre} />
                   <div className="mt-3 border-t border-border pt-3">
-                    <Row label="Seña abonada" value={formatPrice(confirmedTurno.monto_seña)} highlight />
+                    <Row label="Seña a transferir" value={formatPrice(confirmedTurno.monto_seña)} highlight />
                     <Row label="Saldo pendiente" value={formatPrice(confirmedTurno.saldo)} />
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-lg border border-gold/40 bg-gold/[0.06] p-4 text-left">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gold">Alias de Mercado Pago</p>
+                  <div className="mt-2 flex flex-col gap-1">
+                    <Row label="Alias" value={MERCADOPAGO.alias} highlight />
+                    <Row label="Titular" value={MERCADOPAGO.titular} />
                   </div>
                 </div>
 
@@ -569,7 +571,7 @@ export function BookingSection() {
                     className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gold px-5 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
                   >
                     <WhatsappIcon className="h-4 w-4" />
-                    Contactar por WhatsApp
+                    Enviar comprobante por WhatsApp
                   </a>
                 </div>
                 <button onClick={resetFlow} className="mt-4 text-sm text-muted-foreground underline-offset-4 hover:underline">
@@ -586,11 +588,11 @@ export function BookingSection() {
                     <path d="M18 6 6 18M6 6l12 12" />
                   </svg>
                 </span>
-                <h3 className="mt-4 font-display text-xl font-700 uppercase">El pago no pudo completarse</h3>
-                <p className="mt-2 text-sm text-muted-foreground">Podés intentar nuevamente. El turno no quedó confirmado.</p>
+                <h3 className="mt-4 font-display text-xl font-700 uppercase">Ese horario ya no está disponible</h3>
+                <p className="mt-2 text-sm text-muted-foreground">Alguien reservó ese turno justo antes. Elegí otro horario.</p>
                 <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:justify-center">
-                  <button onClick={() => setPhase('resumen')} className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-background">
-                    Intentar nuevamente
+                  <button onClick={() => setPhase('horario')} className="rounded-full bg-gold px-6 py-3 text-sm font-semibold text-background">
+                    Elegir otro horario
                   </button>
                   <button onClick={() => setPhase('datos')} className="rounded-full border border-border px-6 py-3 text-sm font-semibold transition-colors hover:bg-secondary">
                     Volver

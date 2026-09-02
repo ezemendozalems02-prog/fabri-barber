@@ -184,11 +184,15 @@ export async function crearTurnoAdmin(input: CrearTurnoAdminInput): Promise<Turn
   })
 }
 
-export type CrearTurnoPublicoInput = Omit<CrearTurnoInput, 'estadoTurno' | 'estadoPago'> & { paymentId: string }
+export type CrearTurnoPublicoInput = Omit<CrearTurnoInput, 'estadoTurno' | 'estadoPago'>
 
-/** Se llama después de que el mock de Mercado Pago aprueba el pago de la seña. */
-export async function confirmarTurnoPublico(input: CrearTurnoPublicoInput): Promise<Turno | ConflictoTurno> {
-  return crearTurno({ ...input, estadoTurno: 'confirmado', estadoPago: 'aprobado' })
+/**
+ * Reserva pública: el cliente transfiere la seña por Alias de Mercado Pago y
+ * envía la captura por WhatsApp. El turno queda "pendiente_pago" hasta que
+ * el barbero confirma manualmente la seña recibida desde el panel admin.
+ */
+export async function reservarTurnoPublico(input: CrearTurnoPublicoInput): Promise<Turno | ConflictoTurno> {
+  return crearTurno({ ...input, estadoTurno: 'pendiente_pago', estadoPago: 'pendiente', paymentId: null })
 }
 
 export async function confirmarTurno(id: string) {
