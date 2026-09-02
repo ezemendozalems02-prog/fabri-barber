@@ -71,7 +71,7 @@ export function isDateAllowed(serviceId: string, date: Date): boolean {
 
 export type OccupiedRange = { start: number; end: number }
 
-const SLOT_STEP = 30 // minutos, grilla de selección de horarios
+export const SLOT_STEP = 30 // minutos, grilla de selección de horarios y bloqueo de turnos ya tomados
 
 /**
  * Genera los horarios disponibles para un servicio en una fecha dada.
