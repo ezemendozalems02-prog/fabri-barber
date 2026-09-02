@@ -118,6 +118,12 @@
     scrollbar-width: none;
   }
 
+  /* Panel admin: fuerza esquema claro con paleta neutra + acento azul,
+     independiente del tema oscuro/dorado del sitio público. */
+  .admin-light {
+    color-scheme: light;
+  }
+
   /* subtle diagonal accent — barber-inspired, used sparingly as a decorative divider */
   .stripes-accent {
     background-image: repeating-linear-gradient(

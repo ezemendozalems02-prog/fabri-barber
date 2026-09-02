@@ -43,6 +43,7 @@ export interface Turno {
   id: string
   cliente: Cliente
   servicio_id: string
+  barbero_id: string
   estilo_corte?: string // opcional, solo aplica al servicio "corte"
   fecha: string // YYYY-MM-DD
   hora_inicio: string // HH:mm
@@ -55,7 +56,60 @@ export interface Turno {
   estado_pago: EstadoPago
   payment_id: string | null
   comentario?: string
+  notas_admin?: string // notas internas, no visibles para el cliente
   created_at: string // ISO
+  updated_at?: string // ISO
+}
+
+export type ComisionTipo = 'porcentaje' | 'fijo'
+
+export interface Barbero {
+  id: string
+  nombre: string
+  foto?: string
+  telefono?: string
+  email?: string
+  especialidad?: string
+  estado: 'activo' | 'inactivo'
+  comision_tipo: ComisionTipo
+  comision_valor: number // % (0-100) si es porcentaje, monto fijo si es fijo
+  created_at: string
+}
+
+export type Rol = 'admin' | 'barbero' | 'recepcion'
+
+export interface Usuario {
+  id: string
+  nombre: string
+  email: string
+  rol: Rol
+  barbero_id?: string // vincula al registro de Barbero cuando rol === 'barbero'
+  avatar?: string
+}
+
+export interface NotaCliente {
+  id: string
+  cliente_id: string // hoy: whatsapp o email del cliente, ver lib/services/clientes.ts
+  texto: string
+  created_at: string
+}
+
+export type TipoNotificacion =
+  | 'nuevo_turno'
+  | 'seña_recibida'
+  | 'turno_pendiente_pago'
+  | 'cancelacion'
+  | 'stock_bajo'
+  | 'nuevo_cliente'
+
+export interface Notificacion {
+  id: string
+  tipo: TipoNotificacion
+  titulo: string
+  descripcion: string
+  turno_id?: string
+  leida: boolean
+  created_at: string
 }
 
 export interface BloqueoHorario {

@@ -10,8 +10,9 @@ import {
   isDateAllowed,
   timeToMinutes,
 } from '@/lib/booking-data'
-import { generateId, getOccupiedRangesForDate, saveTurno } from '@/lib/booking-store'
+import { confirmarTurnoPublico, getOccupiedRangesForDate } from '@/lib/actions/turnos'
 import { processMockPayment } from '@/lib/mock-payment'
+import { DEFAULT_BARBERO_ID } from '@/lib/constants'
 import { HAIRCUTS, SERVICES, SITE } from '@/lib/site-data'
 import type { Turno } from '@/lib/types'
 import { useBooking } from './booking-provider'
@@ -112,20 +113,37 @@ export function BookingSection() {
   const service = SERVICES.find((s) => s.id === serviceId) ?? null
   const dateOptions = useMemo(() => buildDateOptions(28), [])
 
-  const daySlots = useMemo(() => {
-    if (!service || !date) return { morning: [], afternoon: [] }
-    const candidates = generateAvailableSlots(service.id, date, [])
-    const occupied = getOccupiedRangesForDate(toDateKey(date))
-    const withStatus = candidates.map((t) => {
-      const start = timeToMinutes(t)
-      const end = start + service.duration
-      const taken = occupied.some((r) => start < r.end && end > r.start)
-      return { time: t, taken }
+  const [daySlots, setDaySlots] = useState<{ morning: { time: string; taken: boolean }[]; afternoon: { time: string; taken: boolean }[] }>({
+    morning: [],
+    afternoon: [],
+  })
+  const [loadingSlots, setLoadingSlots] = useState(false)
+
+  useEffect(() => {
+    if (!service || !date) {
+      setDaySlots({ morning: [], afternoon: [] })
+      return
+    }
+    let cancelled = false
+    setLoadingSlots(true)
+    getOccupiedRangesForDate(toDateKey(date)).then((occupied) => {
+      if (cancelled) return
+      const candidates = generateAvailableSlots(service.id, date, [])
+      const withStatus = candidates.map((t) => {
+        const start = timeToMinutes(t)
+        const end = start + service.duration
+        const taken = occupied.some((r) => start < r.end && end > r.start)
+        return { time: t, taken }
+      })
+      const breakStart = timeToMinutes('13:00')
+      setDaySlots({
+        morning: withStatus.filter((s) => timeToMinutes(s.time) < breakStart),
+        afternoon: withStatus.filter((s) => timeToMinutes(s.time) >= breakStart),
+      })
+      setLoadingSlots(false)
     })
-    const breakStart = timeToMinutes('13:00')
-    return {
-      morning: withStatus.filter((s) => timeToMinutes(s.time) < breakStart),
-      afternoon: withStatus.filter((s) => timeToMinutes(s.time) >= breakStart),
+    return () => {
+      cancelled = true
     }
   }, [service, date])
 
@@ -157,7 +175,7 @@ export function BookingSection() {
   async function handlePay() {
     if (!service || !date || !time) return
     setPhase('pagando')
-    const { deposit: monto, balance } = calcDeposit(service.price)
+    const { deposit: monto } = calcDeposit(service.price)
     const result = await processMockPayment(monto)
 
     if (!result.approved) {
@@ -165,32 +183,24 @@ export function BookingSection() {
       return
     }
 
-    const [h, m] = time.split(':').map(Number)
-    const endMinutes = h * 60 + m + service.duration
-    const horaFin = `${Math.floor(endMinutes / 60)
-      .toString()
-      .padStart(2, '0')}:${(endMinutes % 60).toString().padStart(2, '0')}`
-
-    const turno: Turno = {
-      id: generateId(),
-      cliente: { id: generateId(), nombre, whatsapp, email },
-      servicio_id: service.id,
-      estilo_corte: styleId ?? undefined,
+    const result2 = await confirmarTurnoPublico({
+      cliente: { nombre, whatsapp, email },
+      servicioId: service.id,
+      barberoId: DEFAULT_BARBERO_ID,
+      estiloCorte: styleId ?? undefined,
       fecha: toDateKey(date),
-      hora_inicio: time,
-      hora_fin: horaFin,
-      precio_total: service.price,
-      porcentaje_seña: 30,
-      monto_seña: monto,
-      saldo: balance,
-      estado_turno: 'confirmado',
-      estado_pago: 'aprobado',
-      payment_id: result.paymentId,
+      hora: time,
       comentario: comentario || undefined,
-      created_at: new Date().toISOString(),
+      paymentId: result.paymentId,
+    })
+
+    if ('motivo' in result2) {
+      // El horario se ocupó justo antes de confirmar el pago — muy poco probable, pero se cubre.
+      setPhase('rechazado')
+      return
     }
-    saveTurno(turno)
-    setConfirmedTurno(turno)
+
+    setConfirmedTurno(result2)
     setPhase('confirmado')
   }
 
@@ -349,7 +359,9 @@ export function BookingSection() {
                 <h3 className="font-display text-xl font-700 uppercase sm:text-2xl">Elegí un horario</h3>
                 <p className="mt-1 text-sm capitalize text-muted-foreground">{formatDateLong(date)}</p>
 
-                {daySlots.morning.length === 0 && daySlots.afternoon.length === 0 ? (
+                {loadingSlots ? (
+                  <p className="mt-6 text-sm text-muted-foreground">Buscando horarios disponibles…</p>
+                ) : daySlots.morning.length === 0 && daySlots.afternoon.length === 0 ? (
                   <p className="mt-6 text-sm text-muted-foreground">No hay horarios disponibles ese día. Probá con otra fecha.</p>
                 ) : (
                   <div className="mt-5 space-y-5">

@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from 'react'
 import { formatPrice } from '@/lib/booking-data'
-import { generateId, savePedido } from '@/lib/booking-store'
+import { savePedido } from '@/lib/actions/pedidos'
 import type { Product } from '@/lib/site-data'
 
 type CartItem = { id: string; title: string; price: number; qty: number }
@@ -88,13 +88,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const count = items.reduce((n, i) => n + i.qty, 0)
   const total = items.reduce((n, i) => n + i.price * i.qty, 0)
 
-  const confirmOrder = () => {
+  const confirmOrder = async () => {
     setStatus('confirming')
     // Demo — sin pasarela de pago conectada todavía para productos.
     // Preparado para reemplazar por preferencia de Mercado Pago real.
-    setTimeout(() => {
-      savePedido({
-        id: generateId(),
+    try {
+      await savePedido({
         cliente_nombre: name || 'Sin nombre',
         items: items.map((i) => ({
           producto_id: i.id,
@@ -104,11 +103,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
         })),
         total,
         estado: 'pendiente',
-        created_at: new Date().toISOString(),
       })
       setItems([])
       setStatus('done')
-    }, 900)
+    } catch {
+      setStatus('idle')
+    }
   }
 
   const value = useMemo(
