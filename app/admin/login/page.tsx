@@ -1,18 +1,30 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { listUsuarios } from '@/lib/actions/usuarios'
 import { LogoMark } from '@/components/logo'
-import { DEMO_USUARIOS, ROL_LABEL, login } from '@/lib/services/auth'
+import { ROL_LABEL, login } from '@/lib/services/auth'
+import type { Usuario } from '@/lib/types'
 
 export default function AdminLoginPage() {
   const router = useRouter()
-  const [selected, setSelected] = useState(DEMO_USUARIOS[0].id)
+  const [usuarios, setUsuarios] = useState<Usuario[]>([])
+  const [selected, setSelected] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    listUsuarios().then((data) => {
+      setUsuarios(data)
+      setSelected(data[0]?.id ?? null)
+    })
+  }, [])
+
   function handleLogin() {
+    const usuario = usuarios.find((u) => u.id === selected)
+    if (!usuario) return
     setLoading(true)
-    login(selected)
+    login(usuario)
     router.replace('/admin')
   }
 
@@ -33,30 +45,34 @@ export default function AdminLoginPage() {
           Elegí un usuario de demo
         </p>
         <div className="mt-3 flex flex-col gap-2">
-          {DEMO_USUARIOS.map((u) => (
-            <button
-              key={u.id}
-              onClick={() => setSelected(u.id)}
-              className={`flex items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-colors ${
-                selected === u.id
-                  ? 'border-blue-600 bg-blue-50 text-blue-700'
-                  : 'border-slate-200 text-slate-700 hover:bg-slate-50'
-              }`}
-            >
-              <span>
-                <span className="block font-medium">{u.nombre}</span>
-                <span className="block text-xs text-slate-400">{u.email}</span>
-              </span>
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
-                {ROL_LABEL[u.rol]}
-              </span>
-            </button>
-          ))}
+          {usuarios.length === 0 ? (
+            <p className="py-4 text-center text-xs text-slate-400">Cargando usuarios…</p>
+          ) : (
+            usuarios.map((u) => (
+              <button
+                key={u.id}
+                onClick={() => setSelected(u.id)}
+                className={`flex items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-colors ${
+                  selected === u.id
+                    ? 'border-blue-600 bg-blue-50 text-blue-700'
+                    : 'border-slate-200 text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                <span>
+                  <span className="block font-medium">{u.nombre}</span>
+                  <span className="block text-xs text-slate-400">{u.email}</span>
+                </span>
+                <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                  {ROL_LABEL[u.rol]}
+                </span>
+              </button>
+            ))
+          )}
         </div>
 
         <button
           onClick={handleLogin}
-          disabled={loading}
+          disabled={loading || !selected}
           className="mt-6 w-full rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           Ingresar

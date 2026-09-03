@@ -2,7 +2,7 @@
 -- para que la base de datos arranque en el mismo estado que la demo.
 
 insert into servicios (id, nombre, descripcion, precio, duracion, dias_disponibles, hora_inicio, hora_fin, orden) values
-  ('corte', 'Corte', 'Corte personalizado según tu estilo, tipo de cabello y forma del rostro. Incluye perfilado de cejas.', 14000, 60, '{2,3,4,5,6}', '10:00', '19:00', 1),
+  ('corte', 'Corte', 'Corte personalizado según tu estilo, tipo de cabello y forma del rostro. Incluye perfilado de cejas.', 14000, 30, '{2,3,4,5,6}', '10:00', '19:00', 1),
   ('barba', 'Barba', 'Perfilado y definición de barba para mantener un look prolijo y cuidado.', 4000, 30, '{2,3,4,5,6}', '10:00', '19:00', 2),
   ('cejas', 'Cejas', 'Perfilado de cejas para complementar tu corte y definir tu mirada.', 4000, 30, '{2,3,4,5,6}', '10:00', '19:00', 3),
   ('claritos', 'Claritos', 'Iluminación y coloración personalizada para darle dimensión y estilo a tu cabello.', 45000, 120, '{2,3,4,5,6}', '10:00', '19:00', 4),
@@ -11,12 +11,9 @@ insert into servicios (id, nombre, descripcion, precio, duracion, dias_disponibl
 on conflict (id) do nothing;
 
 insert into productos (id, nombre, descripcion, precio, imagen, stock) values
-  ('cera-matte', 'Cera Matte', 'Fijación media/alta con acabado mate.', 12000, '', 20),
-  ('peine-profesional', 'Peine Profesional', 'Peine profesional para peinar y definir tu estilo.', 8000, '', 20),
-  ('pomada-cabello', 'Pomada para Cabello', 'Fijación y brillo controlado para estilos clásicos y modernos.', 15000, '', 20),
-  ('aceite-barba', 'Aceite para Barba', 'Aceite para hidratar y mantener la barba suave y prolija.', 13000, '', 20),
-  ('shampoo-masculino', 'Shampoo Masculino', 'Shampoo de uso diario para mantener el cabello limpio y saludable.', 11000, '', 20),
-  ('cepillo-barba', 'Cepillo para Barba', 'Para ordenar, peinar y mantener la barba en forma.', 9000, '', 20)
+  ('cera-brillo-coco', 'Cera para Pelo — Brillo Coco', 'Fijación con acabado brillante y aroma a coco.', 12000, '', 20),
+  ('cera-brillo-cereza', 'Cera para Pelo — Brillo Cereza', 'Fijación con acabado brillante y aroma a cereza.', 12000, '', 20),
+  ('cera-mate-hierba-pura', 'Cera para Pelo — Mate Hierba Pura', 'Fijación con acabado mate natural, a base de hierba pura.', 12000, '', 20)
 on conflict (id) do nothing;
 
 insert into barberos (id, nombre, especialidad, estado, comision_tipo, comision_valor) values
@@ -28,3 +25,7 @@ insert into usuarios (nombre, email, rol, barbero_id) values
   ('Fabri', 'fabri@fabribarber.com', 'barbero', 'fabri'),
   ('Recepción', 'recepcion@fabribarber.com', 'recepcion', null)
 on conflict (email) do nothing;
+
+insert into configuracion (id, nombre, whatsapp, whatsapp_display, instagram, instagram_handle, direccion, horario_general, horario_break, horario_radiofrecuencia, porcentaje_seña, anticipacion_minima_horas, politica_cancelacion) values
+  ('default', 'FABRI BARBER', '5491135659873', '+54 9 11 3565-9873', 'https://www.instagram.com/fabrilabanca.03', '@fabrilabanca.03', 'Dirección a definir', 'Martes a Sábados · 10:00 a 19:00 hs', '13:00 a 14:00 hs sin atención', 'Martes a Viernes · 10:00 a 19:00 hs', 30, 0, 'Las condiciones de cancelación y devolución de la seña serán informadas al momento de reservar.')
+on conflict (id) do nothing;

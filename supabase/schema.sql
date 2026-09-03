@@ -135,6 +135,24 @@ create table if not exists usuarios (
   avatar text
 );
 
+-- ---------- configuración general de la barbería (fila única) ----------
+create table if not exists configuracion (
+  id text primary key default 'default',
+  nombre text not null default 'FABRI BARBER',
+  whatsapp text not null default '',
+  whatsapp_display text not null default '',
+  instagram text not null default '',
+  instagram_handle text not null default '',
+  direccion text not null default '',
+  horario_general text not null default '',
+  horario_break text not null default '',
+  horario_radiofrecuencia text not null default '',
+  porcentaje_seña integer not null default 30,
+  anticipacion_minima_horas integer not null default 0,
+  politica_cancelacion text not null default '',
+  updated_at timestamptz not null default now()
+);
+
 -- ------------------------------------------------------------------
 -- RLS: todo cerrado por defecto. Las Server Actions usan la service
 -- role key, que ignora RLS — son el único camino de escritura.
@@ -151,6 +169,7 @@ alter table pedidos enable row level security;
 alter table notificaciones enable row level security;
 alter table notas_clientes enable row level security;
 alter table usuarios enable row level security;
+alter table configuracion enable row level security;
 
 drop policy if exists "servicios activos son publicos" on servicios;
 create policy "servicios activos son publicos" on servicios

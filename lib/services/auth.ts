@@ -2,6 +2,9 @@
 
 // ------------------------------------------------------------------
 // Auth de DEMO — login mock en el cliente, sin backend.
+// La lista de usuarios seleccionables vive en Supabase (tabla
+// `usuarios`, administrable desde /admin/configuracion) pero el login
+// en sí sigue siendo "elegí un usuario y entrá", sin contraseña.
 // Guarda el usuario "logueado" en localStorage. El día que se conecte
 // Supabase Auth (u otro proveedor), esto se reemplaza por sesiones
 // reales y RLS por rol; el resto del panel ya consume `rol` desde acá
@@ -9,24 +12,10 @@
 // ------------------------------------------------------------------
 
 import { useEffect, useState } from 'react'
-import { DEFAULT_BARBERO_ID } from '../constants'
 import type { Rol, Usuario } from '../types'
 
 const SESSION_KEY = 'fabribarber_session'
 const SESSION_EVENT = 'fabribarber_session_change'
-
-// Usuarios de demo — en producción esto vive en la base de datos, no en el código.
-export const DEMO_USUARIOS: Usuario[] = [
-  { id: 'u-admin', nombre: 'Fabri (dueño)', email: 'admin@fabribarber.com', rol: 'admin' },
-  {
-    id: 'u-barbero',
-    nombre: 'Fabri',
-    email: 'fabri@fabribarber.com',
-    rol: 'barbero',
-    barbero_id: DEFAULT_BARBERO_ID,
-  },
-  { id: 'u-recepcion', nombre: 'Recepción', email: 'recepcion@fabribarber.com', rol: 'recepcion' },
-]
 
 export const ROL_LABEL: Record<Rol, string> = {
   admin: 'Administrador',
@@ -44,10 +33,8 @@ export function getSession(): Usuario | null {
   }
 }
 
-export function login(userId: string) {
-  const user = DEMO_USUARIOS.find((u) => u.id === userId)
-  if (!user) return
-  window.localStorage.setItem(SESSION_KEY, JSON.stringify(user))
+export function login(usuario: Usuario) {
+  window.localStorage.setItem(SESSION_KEY, JSON.stringify(usuario))
   window.dispatchEvent(new Event(SESSION_EVENT))
 }
 

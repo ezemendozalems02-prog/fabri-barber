@@ -121,6 +121,23 @@ export interface BloqueoHorario {
   created_at: string
 }
 
+export interface Configuracion {
+  id: string
+  nombre: string
+  whatsapp: string
+  whatsapp_display: string
+  instagram: string
+  instagram_handle: string
+  direccion: string
+  horario_general: string
+  horario_break: string
+  horario_radiofrecuencia: string
+  porcentaje_seña: number
+  anticipacion_minima_horas: number
+  politica_cancelacion: string
+  updated_at: string
+}
+
 export interface Pedido {
   id: string
   cliente_nombre: string
