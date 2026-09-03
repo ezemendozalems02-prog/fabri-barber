@@ -5,7 +5,6 @@ import {
   generateAvailableSlots,
   getServiceDuration,
   minutesToTime,
-  SLOT_STEP,
   timeToMinutes,
   type OccupiedRange,
 } from '../booking-data'
@@ -82,10 +81,11 @@ export async function getOccupiedRangesForDate(
     .filter((t) => t.id !== excludeTurnoId)
     .map((t) => ({
       start: timeToMinutes(t.hora_inicio),
-      // Cada turno ocupado solo bloquea su propia franja de 30 min en la
-      // grilla de disponibilidad (no toda la duración real del servicio) —
-      // así un turno de 10:00 deja libre el de 10:30.
-      end: timeToMinutes(t.hora_inicio) + SLOT_STEP,
+      // Bloquea la duración real del servicio (igual que la agenda del panel):
+      // un corte de 60 min ocupa al barbero hasta que termina, no solo su
+      // franja de inicio. Para servicios de 30 min esto ya deja libre la
+      // media hora siguiente automáticamente.
+      end: timeToMinutes(t.hora_inicio) + getServiceDuration(t.servicio_id),
     }))
   const bloqueoRanges = (bloqueos ?? []).map((b) => ({ start: timeToMinutes(b.hora_inicio), end: timeToMinutes(b.hora_fin) }))
 
