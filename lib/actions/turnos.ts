@@ -25,8 +25,11 @@ const TURNO_SELECT = '*, cliente:clientes(*)'
 
 export type TurnoFiltros = {
   fecha?: string
+  fechaDesde?: string
+  fechaHasta?: string
   servicioId?: string
   barberoId?: string
+  clienteId?: string
   estadoTurno?: EstadoTurno
   estadoPago?: EstadoPago
   busqueda?: string
@@ -35,8 +38,11 @@ export type TurnoFiltros = {
 export async function listTurnos(filtros: TurnoFiltros = {}): Promise<Turno[]> {
   let query = supabaseAdmin.from('turnos').select(TURNO_SELECT)
   if (filtros.fecha) query = query.eq('fecha', filtros.fecha)
+  if (filtros.fechaDesde) query = query.gte('fecha', filtros.fechaDesde)
+  if (filtros.fechaHasta) query = query.lte('fecha', filtros.fechaHasta)
   if (filtros.servicioId) query = query.eq('servicio_id', filtros.servicioId)
   if (filtros.barberoId) query = query.eq('barbero_id', filtros.barberoId)
+  if (filtros.clienteId) query = query.eq('cliente_id', filtros.clienteId)
   if (filtros.estadoTurno) query = query.eq('estado_turno', filtros.estadoTurno)
   if (filtros.estadoPago) query = query.eq('estado_pago', filtros.estadoPago)
 
