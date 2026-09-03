@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { formatPrice } from '@/lib/booking-data'
 import { listTurnos } from '@/lib/actions/turnos'
-import { SERVICES } from '@/lib/site-data'
 import type { EstadoPago, Turno } from '@/lib/types'
+import { useServices } from '@/components/catalog-provider'
 
 const ESTADO_PAGO_LABEL: Record<EstadoPago, string> = { pendiente: 'Pendiente', aprobado: 'Aprobado', rechazado: 'Rechazado' }
 const ESTADO_PAGO_BADGE: Record<EstadoPago, string> = {
@@ -18,6 +18,7 @@ function todayKey() {
 }
 
 export default function PagosPage() {
+  const SERVICES = useServices()
   const [turnos, setTurnos] = useState<Turno[]>([])
   const [loading, setLoading] = useState(true)
   const [estadoPago, setEstadoPago] = useState<EstadoPago | ''>('')

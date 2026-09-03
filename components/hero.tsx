@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { SITE } from '@/lib/site-data'
+import { useSiteConfig } from './catalog-provider'
 import { useBooking } from './booking-provider'
 import { CalendarIcon, ClockIcon, ScissorsIcon, UserIcon } from './icons'
 
@@ -59,6 +59,7 @@ function BarberVisual() {
 
 export function Hero() {
   const { requestBooking } = useBooking()
+  const SITE = useSiteConfig()
 
   return (
     <section

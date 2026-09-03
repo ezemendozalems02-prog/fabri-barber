@@ -49,9 +49,9 @@ export default function ProductosAdminPage() {
         </button>
       </div>
 
-      <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-800">
-        Esta tabla ya se guarda en Supabase, pero la web pública todavía muestra el catálogo de ceras que armamos a
-        mano. Conectarla a esta tabla es el próximo paso.
+      <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs text-emerald-800">
+        Este catálogo ya es el que se muestra en la web pública y en "Ver todos los productos". Un cambio acá
+        (precio, stock, imagen) se ve reflejado ahí al instante.
       </div>
 
       <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white">

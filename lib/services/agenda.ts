@@ -7,7 +7,8 @@
 // a partir de un único fetch por rango.
 // ------------------------------------------------------------------
 
-import { getServiceDuration, minutesToTime, timeToMinutes } from '../booking-data'
+import { minutesToTime, timeToMinutes } from '../booking-data'
+import type { Service } from '../site-data'
 import type { BloqueoHorario, Turno } from '../types'
 
 export type SlotStatus = 'disponible' | 'confirmado' | 'pendiente_pago' | 'completado' | 'bloqueado'
@@ -24,7 +25,7 @@ const AGENDA_START = '10:00'
 const AGENDA_END = '19:00'
 const AGENDA_STEP = 30
 
-export function buildAgendaGrid(turnosDelDia: Turno[], bloqueosDelDia: BloqueoHorario[]): AgendaSlot[] {
+export function buildAgendaGrid(turnosDelDia: Turno[], bloqueosDelDia: BloqueoHorario[], servicios: Service[]): AgendaSlot[] {
   const turnos = turnosDelDia.filter((t) => t.estado_turno !== 'cancelado')
 
   const start = timeToMinutes(AGENDA_START)
@@ -50,7 +51,8 @@ export function buildAgendaGrid(turnosDelDia: Turno[], bloqueosDelDia: BloqueoHo
 
     const turno = turnos.find((tu) => {
       const inicio = timeToMinutes(tu.hora_inicio)
-      const fin = inicio + getServiceDuration(tu.servicio_id)
+      const duracion = servicios.find((s) => s.id === tu.servicio_id)?.duration ?? 30
+      const fin = inicio + duracion
       return t >= inicio && t < fin
     })
 

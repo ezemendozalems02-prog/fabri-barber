@@ -1,10 +1,12 @@
 'use client'
 
-import { NAV_LINKS, SITE } from '@/lib/site-data'
+import { NAV_LINKS } from '@/lib/site-data'
+import { useSiteConfig } from './catalog-provider'
 import { InstagramIcon, WhatsappIcon } from './icons'
 import { LogoMark, Wordmark } from './logo'
 
 export function Footer() {
+  const SITE = useSiteConfig()
   const year = new Date().getFullYear()
   const waHref = `https://wa.me/${SITE.whatsapp}`
 

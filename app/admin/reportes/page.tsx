@@ -6,8 +6,8 @@ import { listBarberos } from '@/lib/actions/barberos'
 import { listClientes, type ClienteResumen } from '@/lib/actions/clientes'
 import { listPedidos } from '@/lib/actions/pedidos'
 import { listTurnos } from '@/lib/actions/turnos'
-import { SERVICES } from '@/lib/site-data'
 import type { Barbero, Pedido, Turno } from '@/lib/types'
+import { useServices } from '@/components/catalog-provider'
 
 type Rango = 'hoy' | 'ayer' | '7dias' | 'mes' | 'personalizado'
 
@@ -39,6 +39,7 @@ function rangoFechas(rango: Rango, desde: string, hasta: string) {
 const RANGO_LABEL: Record<Rango, string> = { hoy: 'Hoy', ayer: 'Ayer', '7dias': 'Últimos 7 días', mes: 'Este mes', personalizado: 'Personalizado' }
 
 export default function ReportesPage() {
+  const SERVICES = useServices()
   const [rango, setRango] = useState<Rango>('7dias')
   const [desdeInput, setDesdeInput] = useState(toKey(new Date()))
   const [hastaInput, setHastaInput] = useState(toKey(new Date()))

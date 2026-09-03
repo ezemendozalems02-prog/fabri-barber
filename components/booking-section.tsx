@@ -12,8 +12,9 @@ import {
 } from '@/lib/booking-data'
 import { getOccupiedRangesForDate, reservarTurnoPublico } from '@/lib/actions/turnos'
 import { DEFAULT_BARBERO_ID } from '@/lib/constants'
-import { HAIRCUTS, MERCADOPAGO, SERVICES, SITE } from '@/lib/site-data'
+import { HAIRCUTS } from '@/lib/site-data'
 import type { Turno } from '@/lib/types'
+import { useServices, useSiteConfig } from './catalog-provider'
 import { useBooking } from './booking-provider'
 import { CalendarIcon, CheckIcon, ClockIcon, WhatsappIcon } from './icons'
 import { Reveal, WordReveal } from './motion-primitives'
@@ -84,6 +85,8 @@ function buildIcs(turno: Turno, serviceName: string) {
 
 export function BookingSection() {
   const { request } = useBooking()
+  const SERVICES = useServices()
+  const config = useSiteConfig()
 
   const [phase, setPhase] = useState<Phase>('servicio')
   const [serviceId, setServiceId] = useState<string | null>(null)
@@ -126,7 +129,7 @@ export function BookingSection() {
     setLoadingSlots(true)
     getOccupiedRangesForDate(toDateKey(date)).then((occupied) => {
       if (cancelled) return
-      const candidates = generateAvailableSlots(service.id, date, [])
+      const candidates = generateAvailableSlots(service, date, [])
       const withStatus = candidates.map((t) => {
         const start = timeToMinutes(t)
         const end = start + service.duration
@@ -145,7 +148,7 @@ export function BookingSection() {
     }
   }, [service, date])
 
-  const deposit = service ? calcDeposit(service.price) : null
+  const deposit = service ? calcDeposit(service.price, config.depositPercent) : null
 
   function resetFlow() {
     setPhase('servicio')
@@ -207,10 +210,10 @@ export function BookingSection() {
   }
 
   const whatsappHref = useMemo(() => {
-    if (!confirmedTurno || !service) return `https://wa.me/${SITE.whatsapp}`
-    const msg = `Hola! Reservé un turno de *${service.title}* para el ${confirmedTurno.fecha} a las ${confirmedTurno.hora_inicio}. Mi nombre es ${nombre}. Ya transferí la seña de ${formatPrice(confirmedTurno.monto_seña)} al alias ${MERCADOPAGO.alias} — les adjunto la captura del comprobante.`
-    return `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(msg)}`
-  }, [confirmedTurno, service, nombre])
+    if (!confirmedTurno || !service) return `https://wa.me/${config.whatsapp}`
+    const msg = `Hola! Reservé un turno de *${service.title}* para el ${confirmedTurno.fecha} a las ${confirmedTurno.hora_inicio}. Mi nombre es ${nombre}. Ya transferí la seña de ${formatPrice(confirmedTurno.monto_seña)} al alias ${config.mercadopago.alias} — les adjunto la captura del comprobante.`
+    return `https://wa.me/${config.whatsapp}?text=${encodeURIComponent(msg)}`
+  }, [confirmedTurno, service, nombre, config])
 
   return (
     <section id="reservar" className="border-t border-border bg-card">
@@ -301,11 +304,11 @@ export function BookingSection() {
               <motion.div key="fecha" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: 0.3, ease: EASE }}>
                 <h3 className="font-display text-xl font-700 uppercase sm:text-2xl">Elegí una fecha</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {service.id === 'radiofrecuencia' ? SITE.hoursRadiofrecuencia : SITE.hoursGeneral}
+                  {service.id === 'radiofrecuencia' ? config.hoursRadiofrecuencia : config.hoursGeneral}
                 </p>
                 <div className="no-scrollbar mt-5 flex gap-2 overflow-x-auto pb-2">
                   {dateOptions.map((d) => {
-                    const allowed = isDateAllowed(service.id, d)
+                    const allowed = isDateAllowed(service, d)
                     const isSelected = date && toDateKey(date) === toDateKey(d)
                     return (
                       <button
@@ -482,7 +485,7 @@ export function BookingSection() {
                   <Row label="Nombre" value={nombre} />
                   <div className="mt-3 border-t border-border pt-3">
                     <Row label="Precio total" value={formatPrice(service.price)} />
-                    <Row label="Seña para reservar (30%)" value={formatPrice(deposit.deposit)} highlight />
+                    <Row label={`Seña para reservar (${deposit.percent}%)`} value={formatPrice(deposit.deposit)} highlight />
                     <Row label="Saldo restante (en el local)" value={formatPrice(deposit.balance)} />
                   </div>
                 </div>
@@ -493,8 +496,8 @@ export function BookingSection() {
                     Transferí <span className="font-semibold text-gold">{formatPrice(deposit.deposit)}</span> por Mercado Pago a este alias:
                   </p>
                   <div className="mt-3 flex flex-col gap-1 rounded-lg bg-background/60 p-3">
-                    <Row label="Alias" value={MERCADOPAGO.alias} highlight />
-                    <Row label="Titular" value={MERCADOPAGO.titular} />
+                    <Row label="Alias" value={config.mercadopago.alias} highlight />
+                    <Row label="Titular" value={config.mercadopago.titular} />
                   </div>
                   <p className="mt-3 text-xs text-muted-foreground">
                     Después de transferir, tocá el botón de abajo para reservar tu horario y enviarnos la captura del comprobante por WhatsApp. Tu turno queda confirmado al recibirla.
@@ -551,8 +554,8 @@ export function BookingSection() {
                 <div className="mt-4 rounded-lg border border-gold/40 bg-gold/[0.06] p-4 text-left">
                   <p className="text-xs font-semibold uppercase tracking-wide text-gold">Alias de Mercado Pago</p>
                   <div className="mt-2 flex flex-col gap-1">
-                    <Row label="Alias" value={MERCADOPAGO.alias} highlight />
-                    <Row label="Titular" value={MERCADOPAGO.titular} />
+                    <Row label="Alias" value={config.mercadopago.alias} highlight />
+                    <Row label="Titular" value={config.mercadopago.titular} />
                   </div>
                 </div>
 
@@ -605,7 +608,7 @@ export function BookingSection() {
 
         <p className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-muted-foreground">
           <ClockIcon className="h-3.5 w-3.5" />
-          {SITE.hoursGeneral} · {SITE.hoursBreak}
+          {config.hoursGeneral} · {config.hoursBreak}
         </p>
       </div>
     </section>

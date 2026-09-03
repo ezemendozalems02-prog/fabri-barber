@@ -4,6 +4,7 @@ import { Geist, Geist_Mono, Oswald } from 'next/font/google'
 import './globals.css'
 import { BookingProvider } from '@/components/booking-provider'
 import { CartProvider } from '@/components/cart-provider'
+import { CatalogProvider } from '@/components/catalog-provider'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
 const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
@@ -41,9 +42,11 @@ export default function RootLayout({
       className={`dark bg-background ${geist.variable} ${geistMono.variable} ${oswald.variable}`}
     >
       <body className="antialiased grain font-sans">
-        <CartProvider>
-          <BookingProvider>{children}</BookingProvider>
-        </CartProvider>
+        <CatalogProvider>
+          <CartProvider>
+            <BookingProvider>{children}</BookingProvider>
+          </CartProvider>
+        </CatalogProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
-import { calcDeposit, formatDateLong, formatPrice, generateAvailableSlots } from '@/lib/booking-data'
+import { formatDateLong, formatPrice, generateAvailableSlots } from '@/lib/booking-data'
 import { getBarbero } from '@/lib/actions/barberos'
 import {
   cancelarTurno,
@@ -13,8 +13,9 @@ import {
   getOccupiedRangesForDate,
   getTurno,
 } from '@/lib/actions/turnos'
-import { HAIRCUTS, SERVICES } from '@/lib/site-data'
+import { HAIRCUTS } from '@/lib/site-data'
 import type { Barbero, Turno } from '@/lib/types'
+import { useServices } from '@/components/catalog-provider'
 import { CalendarIcon, CheckIcon, WhatsappIcon, XIcon } from '@/components/icons'
 import { SLOT_STATUS_META, type SlotStatus } from '@/lib/services/agenda'
 
@@ -37,6 +38,7 @@ export function TurnoDetailSheet({
   onClose: () => void
   onChanged: () => void
 }) {
+  const SERVICES = useServices()
   const [turno, setTurno] = useState<Turno | null>(null)
   const [barbero, setBarbero] = useState<Barbero | null>(null)
   const [notas, setNotas] = useState('')
@@ -65,10 +67,9 @@ export function TurnoDetailSheet({
 
   const servicio = turno ? SERVICES.find((s) => s.id === turno.servicio_id) : undefined
   const estilo = turno?.estilo_corte ? HAIRCUTS.find((h) => h.id === turno.estilo_corte) : undefined
-  const deposit = servicio ? calcDeposit(servicio.price) : null
 
   useEffect(() => {
-    if (!turno || !nuevaFecha) {
+    if (!turno || !nuevaFecha || !servicio) {
       setHorariosDisponibles([])
       return
     }
@@ -76,12 +77,12 @@ export function TurnoDetailSheet({
     getOccupiedRangesForDate(nuevaFecha, turno.barbero_id, turno.id).then((occupied) => {
       if (cancelled) return
       const date = new Date(`${nuevaFecha}T00:00:00`)
-      setHorariosDisponibles(generateAvailableSlots(turno.servicio_id, date, occupied))
+      setHorariosDisponibles(generateAvailableSlots(servicio, date, occupied))
     })
     return () => {
       cancelled = true
     }
-  }, [turno, nuevaFecha])
+  }, [turno, nuevaFecha, servicio])
 
   async function refresh() {
     if (!turnoId) return

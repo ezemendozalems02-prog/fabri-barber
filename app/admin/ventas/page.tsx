@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { formatPrice } from '@/lib/booking-data'
 import { listPedidos } from '@/lib/actions/pedidos'
 import { listTurnos } from '@/lib/actions/turnos'
-import { SERVICES } from '@/lib/site-data'
 import type { Pedido, Turno } from '@/lib/types'
+import { useServices } from '@/components/catalog-provider'
 
 type Periodo = 'hoy' | 'semana' | 'mes' | 'todo'
 
@@ -25,6 +25,7 @@ function inPeriod(dateStr: string, periodo: Periodo) {
 const PERIODO_LABEL: Record<Periodo, string> = { hoy: 'Hoy', semana: 'Últimos 7 días', mes: 'Este mes', todo: 'Todo' }
 
 export default function VentasPage() {
+  const SERVICES = useServices()
   const [turnos, setTurnos] = useState<Turno[]>([])
   const [pedidos, setPedidos] = useState<Pedido[]>([])
   const [loading, setLoading] = useState(true)

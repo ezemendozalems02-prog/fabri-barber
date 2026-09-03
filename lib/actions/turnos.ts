@@ -1,16 +1,11 @@
 'use server'
 
-import {
-  calcDeposit,
-  generateAvailableSlots,
-  getServiceDuration,
-  minutesToTime,
-  timeToMinutes,
-  type OccupiedRange,
-} from '../booking-data'
-import { SERVICES } from '../site-data'
+import { calcDeposit, generateAvailableSlots, minutesToTime, timeToMinutes, type OccupiedRange } from '../booking-data'
+import type { Service } from '../site-data'
+import { mapServicio } from '../services/catalogo'
 import { supabaseAdmin } from '../supabase/server'
 import type { Cliente, EstadoPago, EstadoTurno, Turno } from '../types'
+import { getConfiguracion } from './configuracion'
 import { findOrCreateCliente } from './clientes'
 import { crearNotificacion } from './notificaciones'
 
@@ -22,6 +17,15 @@ function rowToTurno(row: TurnoRow): Turno {
 }
 
 const TURNO_SELECT = '*, cliente:clientes(*)'
+
+/** Todos los servicios (activos e inactivos) mapeados, para resolver duración/precio de turnos existentes o nuevos. */
+async function getServiciosMapa(): Promise<Map<string, Service>> {
+  const { data, error } = await supabaseAdmin.from('servicios').select('*')
+  if (error) throw new Error(error.message)
+  const map = new Map<string, Service>()
+  for (const row of data ?? []) map.set(row.id, mapServicio(row))
+  return map
+}
 
 export type TurnoFiltros = {
   fecha?: string
@@ -76,9 +80,10 @@ export async function getOccupiedRangesForDate(
     .neq('estado_turno', 'cancelado')
   if (barberoId) turnosQuery = turnosQuery.eq('barbero_id', barberoId)
 
-  const [{ data: turnos, error: e1 }, { data: bloqueos, error: e2 }] = await Promise.all([
+  const [{ data: turnos, error: e1 }, { data: bloqueos, error: e2 }, servicios] = await Promise.all([
     turnosQuery,
     supabaseAdmin.from('bloqueos_horarios').select('hora_inicio, hora_fin').eq('fecha', fecha),
+    getServiciosMapa(),
   ])
   if (e1) throw new Error(e1.message)
   if (e2) throw new Error(e2.message)
@@ -91,7 +96,7 @@ export async function getOccupiedRangesForDate(
       // un corte de 60 min ocupa al barbero hasta que termina, no solo su
       // franja de inicio. Para servicios de 30 min esto ya deja libre la
       // media hora siguiente automáticamente.
-      end: timeToMinutes(t.hora_inicio) + getServiceDuration(t.servicio_id),
+      end: timeToMinutes(t.hora_inicio) + (servicios.get(t.servicio_id)?.duration ?? 30),
     }))
   const bloqueoRanges = (bloqueos ?? []).map((b) => ({ start: timeToMinutes(b.hora_inicio), end: timeToMinutes(b.hora_fin) }))
 
@@ -108,8 +113,10 @@ export async function validarDisponibilidad(
   excludeTurnoId?: string,
 ): Promise<ConflictoTurno | null> {
   const date = new Date(`${fecha}T00:00:00`)
-  const occupied = await getOccupiedRangesForDate(fecha, barberoId, excludeTurnoId)
-  const validos = generateAvailableSlots(servicioId, date, occupied)
+  const [occupied, servicios] = await Promise.all([getOccupiedRangesForDate(fecha, barberoId, excludeTurnoId), getServiciosMapa()])
+  const servicio = servicios.get(servicioId)
+  if (!servicio) return { motivo: 'Servicio inválido.' }
+  const validos = generateAvailableSlots(servicio, date, occupied)
   if (!validos.includes(hora)) {
     return { motivo: 'Ese horario no está disponible (día no habilitado, cruza el almuerzo, cierre, o ya está ocupado).' }
   }
@@ -134,13 +141,13 @@ async function crearTurno(input: CrearTurnoInput): Promise<Turno | ConflictoTurn
   const conflicto = await validarDisponibilidad(input.servicioId, input.barberoId, input.fecha, input.hora)
   if (conflicto) return conflicto
 
-  const servicio = SERVICES.find((s) => s.id === input.servicioId)
+  const [servicios, config] = await Promise.all([getServiciosMapa(), getConfiguracion()])
+  const servicio = servicios.get(input.servicioId)
   if (!servicio) return { motivo: 'Servicio inválido.' }
 
   const cliente = await findOrCreateCliente(input.cliente)
-  const duration = getServiceDuration(input.servicioId)
-  const horaFin = minutesToTime(timeToMinutes(input.hora) + duration)
-  const { deposit, balance } = calcDeposit(servicio.price)
+  const horaFin = minutesToTime(timeToMinutes(input.hora) + servicio.duration)
+  const { percent, deposit, balance } = calcDeposit(servicio.price, config.porcentaje_seña)
 
   const { data, error } = await supabaseAdmin
     .from('turnos')
@@ -153,7 +160,7 @@ async function crearTurno(input: CrearTurnoInput): Promise<Turno | ConflictoTurn
       hora_inicio: input.hora,
       hora_fin: horaFin,
       precio_total: servicio.price,
-      porcentaje_seña: 30,
+      porcentaje_seña: percent,
       monto_seña: deposit,
       saldo: balance,
       estado_turno: input.estadoTurno,
@@ -237,7 +244,8 @@ export async function reprogramarTurno(id: string, fecha: string, hora: string):
   const conflicto = await validarDisponibilidad(turno.servicio_id, turno.barbero_id, fecha, hora, id)
   if (conflicto) return { ok: false, motivo: conflicto.motivo }
 
-  const duration = getServiceDuration(turno.servicio_id)
+  const servicios = await getServiciosMapa()
+  const duration = servicios.get(turno.servicio_id)?.duration ?? 30
   const horaFin = minutesToTime(timeToMinutes(hora) + duration)
   const { error } = await supabaseAdmin
     .from('turnos')

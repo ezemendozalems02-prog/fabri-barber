@@ -6,8 +6,9 @@ import { MobileCta } from '@/components/mobile-cta'
 import { Navbar } from '@/components/navbar'
 import { Reveal, WordReveal } from '@/components/motion-primitives'
 import { useCart } from '@/components/cart-provider'
+import { useProducts } from '@/components/catalog-provider'
 import { formatPrice } from '@/lib/booking-data'
-import { PRODUCTS, type Product } from '@/lib/site-data'
+import type { Product } from '@/lib/site-data'
 
 const PRODUCT_ICONS: Record<Product['icon'], typeof JarIcon> = {
   wax: JarIcon,
@@ -20,6 +21,7 @@ const PRODUCT_ICONS: Record<Product['icon'], typeof JarIcon> = {
 
 export default function ProductosPage() {
   const { addItem } = useCart()
+  const PRODUCTS = useProducts()
 
   return (
     <>
@@ -52,8 +54,13 @@ export default function ProductosPage() {
               return (
                 <Reveal key={product.id} delay={(i % 3) * 0.06}>
                   <div className="flex h-full flex-col rounded-xl border border-border bg-card p-5">
-                    <div className="flex aspect-square items-center justify-center rounded-lg border border-border bg-secondary/50">
-                      <Icon className="h-12 w-12 text-gold" />
+                    <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-border bg-secondary/50">
+                      {product.imagen ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={product.imagen} alt={product.title} className="h-full w-full object-cover" />
+                      ) : (
+                        <Icon className="h-12 w-12 text-gold" />
+                      )}
                     </div>
                     <h3 className="mt-4 font-display text-base font-700 uppercase tracking-tight sm:text-lg">
                       {product.title}

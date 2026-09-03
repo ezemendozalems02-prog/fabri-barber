@@ -2,12 +2,13 @@
 
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
-import { SITE } from '@/lib/site-data'
+import { useSiteConfig } from './catalog-provider'
 import { useBooking } from './booking-provider'
 import { WhatsappIcon } from './icons'
 
 export function MobileCta() {
   const { requestBooking } = useBooking()
+  const SITE = useSiteConfig()
   const [scrolledPast, setScrolledPast] = useState(false)
   const [inBookingSection, setInBookingSection] = useState(false)
 

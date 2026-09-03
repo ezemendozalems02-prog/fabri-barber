@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react'
 import { formatPrice } from '@/lib/booking-data'
 import { agregarNotaCliente, getCliente, listNotasCliente, type ClienteResumen } from '@/lib/actions/clientes'
 import { listTurnos } from '@/lib/actions/turnos'
-import { SERVICES } from '@/lib/site-data'
 import type { Cliente, NotaCliente, Turno } from '@/lib/types'
+import { useServices } from '@/components/catalog-provider'
 import { WhatsappIcon, XIcon } from '@/components/icons'
 
 const ESTADO_TURNO_LABEL: Record<Turno['estado_turno'], string> = {
@@ -32,6 +32,7 @@ export function ClienteDetailSheet({
   clienteId: string | null
   onClose: () => void
 }) {
+  const SERVICES = useServices()
   const [cliente, setCliente] = useState<(Cliente & { created_at: string }) | null>(null)
   const [turnos, setTurnos] = useState<Turno[]>([])
   const [notas, setNotas] = useState<NotaCliente[]>([])

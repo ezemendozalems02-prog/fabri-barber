@@ -6,8 +6,8 @@ import { formatPrice } from '@/lib/booking-data'
 import { listBarberos } from '@/lib/actions/barberos'
 import { getDashboardMetrics, getAgendaHoyPreview } from '@/lib/actions/dashboard'
 import { useSession } from '@/lib/services/auth'
-import { SERVICES } from '@/lib/site-data'
 import type { Barbero, Turno } from '@/lib/types'
+import { useServices } from '@/components/catalog-provider'
 import {
   AlertIcon,
   CalendarClockIcon,
@@ -22,6 +22,7 @@ import { TurnoFormModal } from '@/components/admin/turno-form-modal'
 
 export default function AdminDashboardPage() {
   const { user } = useSession()
+  const SERVICES = useServices()
   const [metrics, setMetrics] = useState<Awaited<ReturnType<typeof getDashboardMetrics>> | null>(null)
   const [agendaHoy, setAgendaHoy] = useState<Turno[]>([])
   const [barberos, setBarberos] = useState<Barbero[]>([])

@@ -27,6 +27,8 @@ export interface Servicio {
   hora_inicio: string // HH:mm
   hora_fin: string // HH:mm
   estado: 'activo' | 'inactivo'
+  orden: number
+  nota?: string | null
 }
 
 export interface Producto {
@@ -135,6 +137,8 @@ export interface Configuracion {
   porcentaje_seña: number
   anticipacion_minima_horas: number
   politica_cancelacion: string
+  mp_alias: string
+  mp_titular: string
   updated_at: string
 }
 

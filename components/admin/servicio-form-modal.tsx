@@ -47,6 +47,7 @@ export function ServicioFormModal({
   const [dias, setDias] = useState<number[]>([2, 3, 4, 5, 6])
   const [horaInicio, setHoraInicio] = useState('10:00')
   const [horaFin, setHoraFin] = useState('19:00')
+  const [nota, setNota] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -59,6 +60,7 @@ export function ServicioFormModal({
     setDias(servicio?.dias_disponibles ?? [2, 3, 4, 5, 6])
     setHoraInicio(servicio?.hora_inicio ?? '10:00')
     setHoraFin(servicio?.hora_fin ?? '19:00')
+    setNota(servicio?.nota ?? '')
     setError(null)
   }, [open, servicio])
 
@@ -84,6 +86,7 @@ export function ServicioFormModal({
       dias_disponibles: dias,
       hora_inicio: horaInicio,
       hora_fin: horaFin,
+      nota: nota || null,
     }
     if (servicio) {
       await updateServicio(servicio.id, payload)
@@ -185,6 +188,13 @@ export function ServicioFormModal({
                     </button>
                   ))}
                 </div>
+              </Field>
+              <Field label="Nota (opcional, ej: 'Incluye cejas')">
+                <input
+                  value={nota}
+                  onChange={(e) => setNota(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                />
               </Field>
 
               {error && <p className="text-xs text-red-600">{error}</p>}

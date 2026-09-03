@@ -1,49 +1,11 @@
 // ------------------------------------------------------------------
 // Reglas de negocio del sistema de turnos.
-// La disponibilidad depende del servicio elegido: la radiofrecuencia
-// tiene un horario distinto al resto. La duración de cada servicio
-// determina qué horarios quedan bloqueados.
+// La disponibilidad depende del servicio elegido: días, horario y
+// duración vienen del propio Service (cargado desde Supabase — ver
+// components/catalog-provider.tsx), no de reglas fijas en este archivo.
 // ------------------------------------------------------------------
 
-import { SERVICES } from './site-data'
-
-export type Schedule = {
-  days: number[] // 0=domingo ... 6=sábado
-  start: string // HH:mm
-  end: string // HH:mm
-  breakStart: string
-  breakEnd: string
-}
-
-// Martes a Sábado, 10:00–19:00, sin atención 13:00–14:00.
-export const GENERAL_SCHEDULE: Schedule = {
-  days: [2, 3, 4, 5, 6],
-  start: '10:00',
-  end: '19:00',
-  breakStart: '13:00',
-  breakEnd: '14:00',
-}
-
-// Radiofrecuencia: Martes a Viernes, 10:00–19:00, sin atención 13:00–14:00.
-export const RADIOFRECUENCIA_SCHEDULE: Schedule = {
-  days: [2, 3, 4, 5],
-  start: '10:00',
-  end: '19:00',
-  breakStart: '13:00',
-  breakEnd: '14:00',
-}
-
-export function getScheduleForService(serviceId: string): Schedule {
-  return serviceId === 'radiofrecuencia' ? RADIOFRECUENCIA_SCHEDULE : GENERAL_SCHEDULE
-}
-
-export function getServiceDuration(serviceId: string): number {
-  return SERVICES.find((s) => s.id === serviceId)?.duration ?? 60
-}
-
-export function getServicePrice(serviceId: string): number {
-  return SERVICES.find((s) => s.id === serviceId)?.price ?? 0
-}
+import { DEFAULT_DEPOSIT_PERCENT, type Service } from './site-data'
 
 export function timeToMinutes(time: string): number {
   const [h, m] = time.split(':').map(Number)
@@ -59,42 +21,41 @@ export function minutesToTime(minutes: number): string {
 }
 
 /** true si la fecha corresponde a un día habilitado para el servicio (y no es pasado). */
-export function isDateAllowed(serviceId: string, date: Date): boolean {
-  const schedule = getScheduleForService(serviceId)
+export function isDateAllowed(service: Service, date: Date): boolean {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const target = new Date(date)
   target.setHours(0, 0, 0, 0)
   if (target < today) return false
-  return schedule.days.includes(target.getDay())
+  return service.diasDisponibles.includes(target.getDay())
 }
 
 export type OccupiedRange = { start: number; end: number }
 
 const SLOT_STEP = 30 // minutos, grilla de selección de horarios
+const BREAK_START = '13:00'
+const BREAK_END = '14:00'
 
 /**
  * Genera los horarios disponibles para un servicio en una fecha dada.
  * Un horario es válido si:
  *  - el día está habilitado para el servicio
- *  - el turno completo (inicio + duración) entra dentro del horario de atención
+ *  - el turno completo (inicio + duración) entra dentro del horario del servicio
  *  - el turno completo no se superpone con el corte de 13:00 a 14:00
  *  - el turno completo no se superpone con ningún turno ya ocupado ese día
  */
 export function generateAvailableSlots(
-  serviceId: string,
+  service: Service,
   date: Date,
   occupied: OccupiedRange[] = [],
 ): string[] {
-  if (!isDateAllowed(serviceId, date)) return []
+  if (!isDateAllowed(service, date)) return []
 
-  const schedule = getScheduleForService(serviceId)
-  const duration = getServiceDuration(serviceId)
-
-  const start = timeToMinutes(schedule.start)
-  const end = timeToMinutes(schedule.end)
-  const breakStart = timeToMinutes(schedule.breakStart)
-  const breakEnd = timeToMinutes(schedule.breakEnd)
+  const duration = service.duration
+  const start = timeToMinutes(service.horaInicio)
+  const end = timeToMinutes(service.horaFin)
+  const breakStart = timeToMinutes(BREAK_START)
+  const breakEnd = timeToMinutes(BREAK_END)
 
   const slots: string[] = []
 
@@ -112,11 +73,10 @@ export function generateAvailableSlots(
   return slots
 }
 
-export function calcDeposit(price: number) {
-  const DEPOSIT_PERCENT = 30
-  const deposit = Math.round((price * DEPOSIT_PERCENT) / 100)
+export function calcDeposit(price: number, percent: number = DEFAULT_DEPOSIT_PERCENT) {
+  const deposit = Math.round((price * percent) / 100)
   const balance = price - deposit
-  return { percent: DEPOSIT_PERCENT, deposit, balance }
+  return { percent, deposit, balance }
 }
 
 export function formatPrice(value: number) {

@@ -19,7 +19,8 @@ create table if not exists servicios (
   hora_inicio text not null default '10:00',
   hora_fin text not null default '19:00',
   estado text not null default 'activo' check (estado in ('activo', 'inactivo')),
-  orden integer not null default 0
+  orden integer not null default 0,
+  nota text
 );
 
 -- ---------- productos ----------
@@ -150,6 +151,8 @@ create table if not exists configuracion (
   porcentaje_seña integer not null default 30,
   anticipacion_minima_horas integer not null default 0,
   politica_cancelacion text not null default '',
+  mp_alias text not null default '',
+  mp_titular text not null default '',
   updated_at timestamptz not null default now()
 );
 

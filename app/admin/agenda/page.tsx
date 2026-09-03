@@ -5,8 +5,8 @@ import { formatPrice } from '@/lib/booking-data'
 import { listBarberos } from '@/lib/actions/barberos'
 import { getAgendaRangeData } from '@/lib/actions/agenda'
 import { buildAgendaGrid, SLOT_STATUS_META } from '@/lib/services/agenda'
-import { SERVICES } from '@/lib/site-data'
 import type { Barbero, BloqueoHorario, Turno } from '@/lib/types'
+import { useServices } from '@/components/catalog-provider'
 import { ChevronLeftIcon, ChevronRightIcon, PlusIcon } from '@/components/icons'
 import { TurnoDetailSheet } from '@/components/admin/turno-detail-sheet'
 import { TurnoFormModal } from '@/components/admin/turno-form-modal'
@@ -189,6 +189,7 @@ function DayView({
   onSelectEmpty: (hora: string) => void
 }) {
   const fecha = toKey(date)
+  const services = useServices()
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<{ turnos: Turno[]; bloqueos: BloqueoHorario[] }>({ turnos: [], bloqueos: [] })
 
@@ -221,7 +222,7 @@ function DayView({
     return <div className="rounded-xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-400">Cargando agenda…</div>
   }
 
-  const grid = buildAgendaGrid(data.turnos, data.bloqueos)
+  const grid = buildAgendaGrid(data.turnos, data.bloqueos, services)
 
   return (
     <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
@@ -241,7 +242,7 @@ function DayView({
               </li>
             )
           }
-          const servicio = slot.turno && SERVICES.find((s) => s.id === slot.turno!.servicio_id)
+          const servicio = slot.turno && services.find((s) => s.id === slot.turno!.servicio_id)
           return (
             <li key={slot.hora}>
               <button
@@ -300,6 +301,7 @@ function WeekView({
   )
   const rangeStart = toKey(days[0])
   const rangeEnd = toKey(days[6])
+  const services = useServices()
 
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<{ turnos: Turno[]; bloqueos: BloqueoHorario[] }>({ turnos: [], bloqueos: [] })
@@ -331,7 +333,7 @@ function WeekView({
         const fecha = toKey(d)
         const turnosDelDia = data.turnos.filter((t) => t.fecha === fecha)
         const bloqueosDelDia = data.bloqueos.filter((b) => b.fecha === fecha)
-        const grid = buildAgendaGrid(turnosDelDia, bloqueosDelDia).filter((s) => s.esInicio && s.turno)
+        const grid = buildAgendaGrid(turnosDelDia, bloqueosDelDia, services).filter((s) => s.esInicio && s.turno)
 
         return (
           <div key={fecha} className="flex flex-col rounded-xl border border-slate-200 bg-white">

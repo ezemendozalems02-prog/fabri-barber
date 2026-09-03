@@ -9,6 +9,12 @@ export async function listProductosAdmin(): Promise<Producto[]> {
   return data as Producto[]
 }
 
+export async function listProductosActivos(): Promise<Producto[]> {
+  const { data, error } = await supabaseAdmin.from('productos').select('*').eq('estado', 'activo').order('nombre')
+  if (error) throw new Error(error.message)
+  return data as Producto[]
+}
+
 export async function getProductoAdmin(id: string): Promise<Producto | null> {
   const { data, error } = await supabaseAdmin.from('productos').select('*').eq('id', id).maybeSingle()
   if (error) throw new Error(error.message)

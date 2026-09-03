@@ -75,9 +75,9 @@ export default function ConfiguracionPage() {
         <p className="mt-6 text-sm text-slate-400">Cargando…</p>
       ) : (
         <>
-          <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-800">
-            Estos datos ya se guardan en Supabase, pero la web pública todavía usa los valores fijos que armamos con
-            vos (WhatsApp, Instagram, horarios, % de seña). Conectarla a esta configuración es el próximo paso.
+          <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs text-emerald-800">
+            Estos datos ya son los que usa la web pública: WhatsApp, Instagram, horarios, % de seña y alias de
+            Mercado Pago. Un cambio acá se ve reflejado ahí al instante.
           </div>
 
           <div className="mt-4 rounded-xl border border-slate-200 bg-white p-5">
@@ -146,6 +146,16 @@ export default function ConfiguracionPage() {
                   rows={3}
                   className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500"
                 />
+              </Field>
+            </div>
+
+            <p className="mt-5 text-sm font-semibold text-slate-900">Alias de Mercado Pago (para la seña)</p>
+            <div className="mt-4 grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+              <Field label="Alias">
+                <input value={config.mp_alias} onChange={(e) => setConfig({ ...config, mp_alias: e.target.value })} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500" />
+              </Field>
+              <Field label="Titular">
+                <input value={config.mp_titular} onChange={(e) => setConfig({ ...config, mp_titular: e.target.value })} className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-blue-500" />
               </Field>
             </div>
 

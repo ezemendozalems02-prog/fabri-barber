@@ -5,8 +5,8 @@ import { useSearchParams } from 'next/navigation'
 import { formatPrice } from '@/lib/booking-data'
 import { listBarberos } from '@/lib/actions/barberos'
 import { listTurnos, type TurnoFiltros } from '@/lib/actions/turnos'
-import { SERVICES } from '@/lib/site-data'
 import type { Barbero, EstadoPago, EstadoTurno, Turno } from '@/lib/types'
+import { useServices } from '@/components/catalog-provider'
 import { PlusIcon, SearchIcon } from '@/components/icons'
 import { TurnoDetailSheet } from '@/components/admin/turno-detail-sheet'
 import { TurnoFormModal } from '@/components/admin/turno-form-modal'
@@ -31,6 +31,7 @@ const ESTADO_PAGO_LABEL: Record<EstadoPago, string> = { pendiente: 'Pendiente', 
 
 function TurnosPageInner() {
   const searchParams = useSearchParams()
+  const SERVICES = useServices()
   const [filtros, setFiltros] = useState<TurnoFiltros>({})
   const [busquedaInput, setBusquedaInput] = useState('')
   const [turnos, setTurnos] = useState<Turno[]>([])

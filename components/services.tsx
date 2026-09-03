@@ -1,7 +1,7 @@
 'use client'
 
 import { formatPrice } from '@/lib/booking-data'
-import { SERVICES } from '@/lib/site-data'
+import { useServices } from './catalog-provider'
 import { useBooking } from './booking-provider'
 import { BrowIcon, PaletteIcon, RazorIcon, ScissorsIcon, WaveIcon } from './icons'
 import { Reveal, WordReveal } from './motion-primitives'
@@ -17,6 +17,7 @@ const SERVICE_ICONS: Record<string, typeof ScissorsIcon> = {
 
 export function Services() {
   const { requestBooking } = useBooking()
+  const SERVICES = useServices()
 
   return (
     <section id="servicios" className="border-t border-border bg-card">

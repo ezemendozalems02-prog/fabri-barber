@@ -6,6 +6,8 @@
 // WhatsApp, Instagram y dirección son PLACEHOLDERS hasta tener los datos reales.
 // ------------------------------------------------------------------
 
+// Fallback mientras carga /admin/configuracion desde Supabase (tabla
+// `configuracion`, fuente de verdad real) — ver components/catalog-provider.tsx.
 export const SITE = {
   name: 'FABRI BARBER',
   tagline: 'Cortes, estilo y actitud.',
@@ -19,8 +21,11 @@ export const SITE = {
   hoursRadiofrecuencia: 'Martes a Viernes · 10:00 a 19:00 hs',
 }
 
+export const DEFAULT_DEPOSIT_PERCENT = 30
+
 // Datos para la seña por transferencia (Mercado Pago) — el cliente transfiere
 // a este alias y envía la captura por WhatsApp para confirmar el turno.
+// Fallback — el real vive en /admin/configuracion.
 export const MERCADOPAGO = {
   alias: '.fabri',
   titular: 'Fabrizio Antonio Labanca',
@@ -44,9 +49,17 @@ export type Service = {
   price: number
   duration: number // minutos
   note?: string
+  diasDisponibles: number[] // 0=domingo ... 6=sábado
+  horaInicio: string // HH:mm
+  horaFin: string // HH:mm
 }
 
-// Precios reales provistos por el cliente.
+const DIAS_GENERAL = [2, 3, 4, 5, 6]
+const DIAS_RADIOFRECUENCIA = [2, 3, 4, 5]
+
+// Valores de arranque — se usan solo como fallback mientras se carga el
+// catálogo real desde Supabase (ver components/catalog-provider.tsx).
+// La fuente de verdad es la tabla `servicios`, editable en /admin/servicios.
 export const SERVICES: Service[] = [
   {
     id: 'corte',
@@ -57,6 +70,9 @@ export const SERVICES: Service[] = [
     price: 14000,
     duration: 30,
     note: 'Incluye cejas',
+    diasDisponibles: DIAS_GENERAL,
+    horaInicio: '10:00',
+    horaFin: '19:00',
   },
   {
     id: 'barba',
@@ -65,6 +81,9 @@ export const SERVICES: Service[] = [
     description: 'Perfilado y definición de barba para mantener un look prolijo y cuidado.',
     price: 4000,
     duration: 30,
+    diasDisponibles: DIAS_GENERAL,
+    horaInicio: '10:00',
+    horaFin: '19:00',
   },
   {
     id: 'cejas',
@@ -73,6 +92,9 @@ export const SERVICES: Service[] = [
     description: 'Perfilado de cejas para complementar tu corte y definir tu mirada.',
     price: 4000,
     duration: 30,
+    diasDisponibles: DIAS_GENERAL,
+    horaInicio: '10:00',
+    horaFin: '19:00',
   },
   {
     id: 'claritos',
@@ -81,6 +103,9 @@ export const SERVICES: Service[] = [
     description: 'Iluminación y coloración personalizada para darle dimensión y estilo a tu cabello.',
     price: 45000,
     duration: 120,
+    diasDisponibles: DIAS_GENERAL,
+    horaInicio: '10:00',
+    horaFin: '19:00',
   },
   {
     id: 'global',
@@ -89,6 +114,9 @@ export const SERVICES: Service[] = [
     description: 'Coloración global para un cambio de look completo y personalizado.',
     price: 55000,
     duration: 120,
+    diasDisponibles: DIAS_GENERAL,
+    horaInicio: '10:00',
+    horaFin: '19:00',
   },
   {
     id: 'radiofrecuencia',
@@ -98,6 +126,9 @@ export const SERVICES: Service[] = [
     price: 15000,
     duration: 60,
     note: 'Martes a viernes',
+    diasDisponibles: DIAS_RADIOFRECUENCIA,
+    horaInicio: '10:00',
+    horaFin: '19:00',
   },
 ]
 
@@ -124,8 +155,9 @@ export type Product = {
   id: string
   title: string
   description: string
-  price: number // EJEMPLO — reemplazar por precio real
+  price: number
   icon: 'wax' | 'comb' | 'pomade' | 'oil' | 'shampoo' | 'brush'
+  imagen?: string
 }
 
 // Precio de EJEMPLO — reemplazar por el precio real.

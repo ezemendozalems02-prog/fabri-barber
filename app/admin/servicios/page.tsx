@@ -51,10 +51,9 @@ export default function ServiciosAdminPage() {
         </button>
       </div>
 
-      <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-3.5 text-xs text-amber-800">
-        Por ahora esta tabla se guarda en la base pero la web pública y el turno online todavía muestran el catálogo
-        fijo (precios reales que ya nos diste). Conectar la web a esta tabla es el próximo paso — así vas a poder
-        editar precios y duración sin tocar código.
+      <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs text-emerald-800">
+        Estos servicios ya son los que se muestran y se pueden reservar en la web pública. Un cambio acá (precio,
+        duración, días u horario) se ve reflejado ahí al instante.
       </div>
 
       <div className="mt-4 overflow-hidden rounded-xl border border-slate-200 bg-white">

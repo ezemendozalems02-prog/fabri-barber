@@ -1,10 +1,11 @@
 'use client'
 
-import { SITE } from '@/lib/site-data'
+import { useSiteConfig } from './catalog-provider'
 import { InstagramIcon, PinIcon, WhatsappIcon } from './icons'
 import { Reveal, WordReveal } from './motion-primitives'
 
 export function Contact() {
+  const SITE = useSiteConfig()
   const waHref = `https://wa.me/${SITE.whatsapp}`
   const mapsHref = `https://maps.google.com/?q=${encodeURIComponent(SITE.address)}`
 

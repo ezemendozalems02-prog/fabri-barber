@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react'
 import { formatPrice, generateAvailableSlots } from '@/lib/booking-data'
 import { listBarberosActivos } from '@/lib/actions/barberos'
 import { crearTurnoAdmin, getOccupiedRangesForDate } from '@/lib/actions/turnos'
-import { HAIRCUTS, SERVICES } from '@/lib/site-data'
+import { HAIRCUTS } from '@/lib/site-data'
 import type { Barbero } from '@/lib/types'
+import { useServices } from '@/components/catalog-provider'
 import { XIcon } from '@/components/icons'
 
 function todayKey() {
@@ -26,6 +27,7 @@ export function TurnoFormModal({
   presetFecha?: string
   presetHora?: string
 }) {
+  const SERVICES = useServices()
   const [barberos, setBarberos] = useState<Barbero[]>([])
 
   const [nombre, setNombre] = useState('')
@@ -67,7 +69,7 @@ export function TurnoFormModal({
   const servicio = SERVICES.find((s) => s.id === servicioId)
 
   useEffect(() => {
-    if (!servicioId || !barberoId || !fecha) {
+    if (!servicio || !barberoId || !fecha) {
       setHorarios([])
       return
     }
@@ -75,12 +77,12 @@ export function TurnoFormModal({
     getOccupiedRangesForDate(fecha, barberoId).then((occupied) => {
       if (cancelled) return
       const date = new Date(`${fecha}T00:00:00`)
-      setHorarios(generateAvailableSlots(servicioId, date, occupied))
+      setHorarios(generateAvailableSlots(servicio, date, occupied))
     })
     return () => {
       cancelled = true
     }
-  }, [servicioId, barberoId, fecha])
+  }, [servicio, barberoId, fecha])
 
   async function handleSubmit() {
     if (!nombre.trim() || !whatsapp.trim() || !hora) {

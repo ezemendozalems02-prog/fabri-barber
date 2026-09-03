@@ -1,7 +1,8 @@
 'use client'
 
 import { formatPrice } from '@/lib/booking-data'
-import { PRODUCTS, type Product } from '@/lib/site-data'
+import type { Product } from '@/lib/site-data'
+import { useProducts } from './catalog-provider'
 import { useCart } from './cart-provider'
 import { BottleIcon, BrushIcon, CombIcon, DropIcon, JarIcon } from './icons'
 import { Reveal, WordReveal } from './motion-primitives'
@@ -17,6 +18,7 @@ const PRODUCT_ICONS: Record<Product['icon'], typeof JarIcon> = {
 
 export function Products() {
   const { addItem } = useCart()
+  const PRODUCTS = useProducts()
 
   return (
     <section id="productos" className="border-t border-border">
@@ -46,8 +48,13 @@ export function Products() {
             return (
               <Reveal key={product.id} delay={(i % 3) * 0.08}>
                 <div className="flex h-full flex-col rounded-xl border border-border bg-card p-5">
-                  <div className="flex aspect-square items-center justify-center rounded-lg border border-border bg-secondary/50">
-                    <Icon className="h-10 w-10 text-gold sm:h-12 sm:w-12" />
+                  <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg border border-border bg-secondary/50">
+                    {product.imagen ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={product.imagen} alt={product.title} className="h-full w-full object-cover" />
+                    ) : (
+                      <Icon className="h-10 w-10 text-gold sm:h-12 sm:w-12" />
+                    )}
                   </div>
                   <h3 className="mt-4 font-display text-sm font-700 uppercase tracking-tight sm:text-base">
                     {product.title}
