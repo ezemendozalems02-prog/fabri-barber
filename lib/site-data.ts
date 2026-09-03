@@ -55,7 +55,7 @@ export const SERVICES: Service[] = [
     description:
       'Corte personalizado según tu estilo, tipo de cabello y forma del rostro. Incluye perfilado de cejas.',
     price: 14000,
-    duration: 60,
+    duration: 30,
     note: 'Incluye cejas',
   },
   {
